@@ -1,0 +1,49 @@
+# Referenced this guide from docker on django in docker containers: 
+#https://www.docker.com/blog/how-to-dockerize-django-app/
+
+services:
+ db:
+   image: postgres:17
+   environment:
+     POSTGRES_DB: ${DB_NAME}
+     POSTGRES_USER: ${DB_USERNAME}
+     POSTGRES_PASSWORD: ${DB_PASSWORD}
+   ports:
+     - "5432:5432"
+   volumes:
+     - postgres_data:/var/lib/postgresql/data
+   env_file:
+     - .env
+ 
+ django-web:
+   build: .
+   develop:
+    watch:
+      - action: sync
+        path: .
+        target: /app
+        ignore:
+          - .venv
+      - action: rebuild
+        path: requirements.txt
+   container_name: django-textbookxchange
+   ports:
+     - "8000:8000"
+   depends_on:
+     - db
+   environment:
+     DJANGO_SECRET_KEY: ${DJANGO_KEY}
+     DEBUG: ${DEBUG}
+     DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
+     DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+     DATABASE_ENGINE: ${DB_ENGINE}
+     DATABASE_NAME: ${DB_NAME}
+     DATABASE_USERNAME: ${DB_USERNAME}
+ 
+     DATABASE_PASSWORD: ${DB_PASSWORD}
+     DATABASE_HOST: ${DB_HOST}
+     DATABASE_PORT: ${DB_PORT}
+   env_file:
+     - .env
+volumes:
+   postgres_data:
