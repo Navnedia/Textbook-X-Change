@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'fontawesomefree',
-    "core"
-    "listing"
+    "core",
+    "listings"
 ]
 
 MIDDLEWARE = [

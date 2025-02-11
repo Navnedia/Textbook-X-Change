@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('final', '0002_alter_listing_condition'),
+        ('listings', '0002_alter_listing_condition'),
     ]
 
     operations = [

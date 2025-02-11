@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('final', '0003_remove_listing_image_url_alter_listing_author_and_more'),
+        ('listings', '0003_remove_listing_image_url_alter_listing_author_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
