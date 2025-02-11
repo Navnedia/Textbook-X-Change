@@ -1,0 +1,51 @@
+{%block content%}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Create a Listing</h1>
+            <form action="{% url 'create_listing' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    {{ form.title}}
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN</label>
+                    {{ form.isbn}}                                                                           
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    {{ form.description}}                                                                           
+                </div>
+                
+                <div class="form-group">
+                    <label for="author">Author</label>
+                    {{ form.author}}
+                </div>
+                <!-- <div class="form-group">
+                    <label for="photo">Photo</label>
+                    {{ form.photo}} 
+                </div> -->
+                <div class="form-group">
+                    <label for="condition">condition</label>
+                    {{ form.condition}}  
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    {{ form.location}}
+                </div>
+                <div class="form-group">
+                    <label for="coursecode">Course code</label>
+                    {{ form.coursecode}}
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    {{ form.price}}
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </div>
+</div>
+{%endblock%}
+
