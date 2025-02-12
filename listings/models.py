@@ -9,7 +9,7 @@ class Listing(models.Model):
     author=models.CharField(max_length=64, null=True, blank=True)
     description=models.TextField(null=True, blank=True)
     price=models.DecimalField(max_digits=10, decimal_places=2)
-    # image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
+    image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
     CONDITION_CHOICES = [
     ('New', 'New'),
     ('Like New', 'Like New'),
