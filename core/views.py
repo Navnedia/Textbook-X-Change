@@ -1,4 +1,6 @@
-from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
-# Define core related views here:
+
+def home_view(request):
+    return render(request, "core/index.html")  
