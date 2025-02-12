@@ -4,56 +4,61 @@
     <div class="row">
         <div class="col-md-6">
             <h1>Create a Listing</h1>
-            
-            <form id="listing-form" action="{% url 'listings:create_listing' %}" method="post" enctype="multipart/form-data">
+
+            <form id="listing-form" action="{% url 'listings:create_listing' %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
                 <!-- Step 1: Book Details -->
                 <div id="step-1">
                     <h3>Step 1: Book Details</h3>
-                    
+
                     <div class="form-group">
                         <label for="title">Title</label>
                         {{ form.title }}
                     </div>
+
                     <div class="form-group">
                         <label for="isbn">ISBN</label>
                         {{ form.isbn }}
                         {% if form.isbn.errors %}
-                        <div class="text-danger small">
-                            {{ form.isbn.errors }}
-                        </div>
-                    {% endif %}
+                        <div class="text-danger small">{{ form.isbn.errors }}</div>
+                        {% endif %}
                     </div>
+
                     <div class="form-group">
                         <label for="author">Author</label>
                         {{ form.author }}
                     </div>
+
                     <div class="form-group">
                         <label for="description">Description</label>
                         {{ form.description }}
                     </div>
+
                     <div class="form-group">
                         <label for="condition">Condition</label>
                         {{ form.condition }}
                         {% if form.condition.errors %}
-                        <div class="text-danger small">
-                            {{ form.condition.errors }}
-                        </div>
-                    {% endif %}
+                        <div class="text-danger small">{{ form.condition.errors }}</div>
+                        {% endif %}
                     </div>
+
                     <div class="form-group">
                         <label for="location">Location</label>
                         {{ form.location }}
                         {% if form.location.errors %}
-                        <div class="text-danger small">
-                            {{ form.location.errors }}
-                        </div>
-                    {% endif %}
+                        <div class="text-danger small">{{ form.location.errors }}</div>
+                        {% endif %}
                     </div>
+
                     <div class="form-group">
                         <label for="coursecode">Course Code</label>
                         {{ form.coursecode }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Upload Images</label>
+                        {{ form.image }}
                     </div>
 
                     <button type="button" id="next-button" class="btn btn-primary">Next</button>
@@ -62,47 +67,116 @@
                 <!-- Step 2: Price Input -->
                 <div id="step-2" style="display: none;">
                     <h3>Step 2: Pricing</h3>
-                    
+
                     <div class="form-group">
                         <label for="suggested-price">Suggested Price (from eBay)</label>
                         <input type="text" id="suggested-price" class="form-control" readonly>
                     </div>
+
                     <div class="form-group">
                         <label for="price">Your Price</label>
                         {{ form.price }}
+                        {% if form.location.errors %}
+                        <div class="text-danger small">{{ form.location.errors }}</div>
+                        {% endif %}
+                        
                     </div>
-
+                    <!-- Table displaying quartile data -->
+                    <div id="price-table-container">
+                        <h3>Price Breakdown from eBay</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Median Price</th>
+                                    <th>First Quartile (Q1)</th>
+                                    <th>Third Quartile (Q3)</th>
+                                    <th>Suggested List Price</th>
+                                    <th>Suggested Buy Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="median-price">-</td>
+                                    <td id="q1-price">-</td>
+                                    <td id="q3-price">-</td>
+                                    <td id="suggested-list-price">-</td>
+                                    <td id="suggested-buy-price">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <button type="button" id="back-button" class="btn btn-secondary">Back</button>
                     <button type="submit" class="btn btn-success">Create Listing</button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
-
+<!-- used ai and documentation and previous project -->
 <script>
-    document.getElementById("next-button").addEventListener("click", function() {
-        document.getElementById("step-1").style.display = "none";
-        document.getElementById("step-2").style.display = "block";
+ 
+document.addEventListener("DOMContentLoaded", function() {
+    const isbnField = document.getElementById("id_isbn");
+    const nextButton = document.getElementById("next-button");
+    const backButton = document.getElementById("back-button");
 
-        // Get ISBN and fetch eBay suggested price
-        let isbn = document.getElementById("id_isbn").value;
-        fetchSuggestedPrice(isbn);
+    // When the ISBN field loses focus, trigger the fetch call.
+    isbnField.addEventListener("blur", function() {
+        const isbn = isbnField.value.trim();
+        if (isbn) {
+            fetchSuggestedPrice(isbn);
+        }
     });
 
-    document.getElementById("back-button").addEventListener("click", function() {
+    // When Next is clicked, simply toggle to step 2.
+    nextButton.addEventListener("click", function() {
+        const isbn = isbnField.value.trim();
+        if (!isbn) {
+            alert("Please enter an ISBN.");
+            return;
+        }
+        document.getElementById("step-1").style.display = "none";
+        document.getElementById("step-2").style.display = "block";
+    });
+
+    // Back button returns to step 1.
+    backButton.addEventListener("click", function() {
         document.getElementById("step-2").style.display = "none";
         document.getElementById("step-1").style.display = "block";
     });
 
+    // This function calls your Django endpoint (which returns JSON data)
+    // and fills in both the suggested price field and the detailed table.
     function fetchSuggestedPrice(isbn) {
         fetch("{% url 'listings:fetch_ebay_price' %}?isbn=" + isbn)
             .then(response => response.json())
             .then(data => {
-                document.getElementById("suggested-price").value = data.suggested_price || "N/A";
+                console.log("Fetched data:", data);
+                if (data.used && data.used.median_price) {
+                    const suggestedPrice = data.used.median_price;
+                    document.getElementById("suggested-price").value = suggestedPrice;
+                    document.getElementById("id_price").value = suggestedPrice;
+                    document.getElementById("median-price").textContent = "$" + data.used.median_price;
+                    document.getElementById("q1-price").textContent = "$" + data.used.q1_price;
+                    document.getElementById("q3-price").textContent = "$" + data.used.q3_price;
+                    document.getElementById("suggested-list-price").textContent = "$" + data.used.suggested_list_price;
+                    document.getElementById("suggested-buy-price").textContent = "$" + data.used.suggested_buy_price;
+                } else {
+                    document.getElementById("suggested-price").value = "N/A";
+                    document.getElementById("id_price").value = "";
+                    document.getElementById("median-price").textContent = "-";
+                    document.getElementById("q1-price").textContent = "-";
+                    document.getElementById("q3-price").textContent = "-";
+                    document.getElementById("suggested-list-price").textContent = "-";
+                    document.getElementById("suggested-buy-price").textContent = "-";
+                }
             })
-            .catch(error => console.error("Error fetching price:", error));
+            .catch(error => {
+                console.error("Error fetching price:", error);
+                document.getElementById("suggested-price").value = "N/A";
+                document.getElementById("id_price").value = "";
+            });
     }
+});
 </script>
 {% endblock %}
