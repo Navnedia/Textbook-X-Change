@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4">Available Textbooks</h2>
-    
+
     <div class="row">
         {% for i in count %}
         <div class="col-md-2 mb-4">
@@ -16,7 +16,14 @@
                 <div class="card-body text-center">
                     <h6 class="card-title">Textbook {{ i }}</h6> 
                     <p class="card-text"><strong>$XX.XX</strong></p>
-                    <a href="#" class="btn btn-primary btn-sm">View Details</a>
+                    <a href="#" class="btn btn-primary btn-sm view-details-btn" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detailsModal"
+                        data-title="Textbook {{ i }}" 
+                        data-price="$XX.XX"
+                        data-description="This is a great textbook about XYZ.">
+                        View Details
+                    </a>
                 </div>
             </div>
         </div>
@@ -24,6 +31,45 @@
     </div>
 </div>
 
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Textbook Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="modal-title"></span></p>
+                <p><strong>Price:</strong> <span id="modal-price"></span></p>
+                <p><strong>Description:</strong> <span id="modal-description"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Update Modal Content -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById("detailsModal");
+        var modalTitle = document.getElementById("modal-title");
+        var modalPrice = document.getElementById("modal-price");
+        var modalDescription = document.getElementById("modal-description");
+
+        document.querySelectorAll(".view-details-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                modalTitle.innerText = this.getAttribute("data-title");
+                modalPrice.innerText = this.getAttribute("data-price");
+                modalDescription.innerText = this.getAttribute("data-description");
+            });
+        });
+    });
+</script>
+
+<!-- Bootstrap Styling -->
 <style>
     .card {
         border: none;
@@ -33,4 +79,5 @@
         font-size: 0.9rem;
     }
 </style>
+
 {% endblock %}
