@@ -1,31 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h2>Register</h2>
+{% extends "core/base.html" %}
+
+{% block title %}Register | Textbook X Change{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow p-4" style="width: 400px;">
+        <h3 class="text-center mb-4">Register</h3>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
         <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password1">Password:</label>
-            <input type="password" id="password1" name="password1" required>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
 
-            <label for="password2">Confirm Password:</label>
-            <input type="password" id="password2" name="password2" required>
-            
-            <button type="submit">Register</button>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password1" class="form-label">Password</label>
+                <input type="password" id="password1" name="password1" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password2" class="form-label">Confirm Password</label>
+                <input type="password" id="password2" name="password2" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Register</button>
         </form>
-        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+
+        <div class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
