@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Textbook Listings{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Available Textbooks</h2>
+    
+    <div class="row">
+        {% for i in count %}
+        <div class="col-md-2 mb-4">
+            <div class="card">
+                <div class="placeholder-image" style="height: 200px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                    <span class="text-muted">Image</span>
+                </div>
+                <div class="card-body text-center">
+                    <h6 class="card-title">Textbook {{ i }}</h6> 
+                    <p class="card-text"><strong>$XX.XX</strong></p>
+                    <a href="#" class="btn btn-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .card-body h6 {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

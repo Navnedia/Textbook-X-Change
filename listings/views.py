@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .forms import ListingForm
 
+def listings(request):
+    return render(request, "listings.html", {"count": range(12)})
 
 # Create your views here.
 def create_listing(request):
