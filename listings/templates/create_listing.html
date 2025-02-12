@@ -1,51 +1,108 @@
-{%block content%}
+{% extends "core/base.html" %}
+{% block content %}
 <div class="container">
     <div class="row">
         <div class="col-md-6">
             <h1>Create a Listing</h1>
-            <form action="{% url 'create_listing' %}" method="post" enctype="multipart/form-data">
+            
+            <form id="listing-form" action="{% url 'listings:create_listing' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    {{ form.title}}
-                </div>
-                <div class="form-group">
-                    <label for="isbn">ISBN</label>
-                    {{ form.isbn}}                                                                           
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    {{ form.description}}                                                                           
-                </div>
                 
-                <div class="form-group">
-                    <label for="author">Author</label>
-                    {{ form.author}}
+                <!-- Step 1: Book Details -->
+                <div id="step-1">
+                    <h3>Step 1: Book Details</h3>
+                    
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="form-group">
+                        <label for="isbn">ISBN</label>
+                        {{ form.isbn }}
+                        {% if form.isbn.errors %}
+                        <div class="text-danger small">
+                            {{ form.isbn.errors }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="author">Author</label>
+                        {{ form.author }}
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="form-group">
+                        <label for="condition">Condition</label>
+                        {{ form.condition }}
+                        {% if form.condition.errors %}
+                        <div class="text-danger small">
+                            {{ form.condition.errors }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                        <div class="text-danger small">
+                            {{ form.location.errors }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="coursecode">Course Code</label>
+                        {{ form.coursecode }}
+                    </div>
+
+                    <button type="button" id="next-button" class="btn btn-primary">Next</button>
                 </div>
-                <!-- <div class="form-group">
-                    <label for="photo">Photo</label>
-                    {{ form.photo}} 
-                </div> -->
-                <div class="form-group">
-                    <label for="condition">condition</label>
-                    {{ form.condition}}  
+
+                <!-- Step 2: Price Input -->
+                <div id="step-2" style="display: none;">
+                    <h3>Step 2: Pricing</h3>
+                    
+                    <div class="form-group">
+                        <label for="suggested-price">Suggested Price (from eBay)</label>
+                        <input type="text" id="suggested-price" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Your Price</label>
+                        {{ form.price }}
+                    </div>
+
+                    <button type="button" id="back-button" class="btn btn-secondary">Back</button>
+                    <button type="submit" class="btn btn-success">Create Listing</button>
                 </div>
-                <div class="form-group">
-                    <label for="location">Location</label>
-                    {{ form.location}}
-                </div>
-                <div class="form-group">
-                    <label for="coursecode">Course code</label>
-                    {{ form.coursecode}}
-                </div>
-                <div class="form-group">
-                    <label for="price">Price</label>
-                    {{ form.price}}
-                </div>
-                <button type="submit" class="btn btn-primary">Create</button>
             </form>
+
         </div>
     </div>
 </div>
-{%endblock%}
 
+<script>
+    document.getElementById("next-button").addEventListener("click", function() {
+        document.getElementById("step-1").style.display = "none";
+        document.getElementById("step-2").style.display = "block";
+
+        // Get ISBN and fetch eBay suggested price
+        let isbn = document.getElementById("id_isbn").value;
+        fetchSuggestedPrice(isbn);
+    });
+
+    document.getElementById("back-button").addEventListener("click", function() {
+        document.getElementById("step-2").style.display = "none";
+        document.getElementById("step-1").style.display = "block";
+    });
+
+    function fetchSuggestedPrice(isbn) {
+        fetch("{% url 'listings:fetch_ebay_price' %}?isbn=" + isbn)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("suggested-price").value = data.suggested_price || "N/A";
+            })
+            .catch(error => console.error("Error fetching price:", error));
+    }
+</script>
+{% endblock %}
