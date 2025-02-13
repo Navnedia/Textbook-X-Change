@@ -44,10 +44,10 @@
                     </form>
 
                     <div class="navbar-nav">
-                        <a href="#" class="nav-link">Home</a>
+                        <a href="{% url 'index' %}" class="nav-link">Home</a>
                         <a href="#" class="nav-link">About</a>
-                        <a href="#" class="nav-link">Browse</a>
-                        <a href="{% url 'listings:create_listing' %}" class="nav-link">Sell</a>
+                        <a href="{% url 'listings:listing_page' %}" class="nav-link">Browse</a>
+                        <a href="{% url 'listings:prelist' %}" class="nav-link">Sell</a>
                         <a href="#" class="nav-link">
                             <i class="fa fa-user"></i>
                         </a>

@@ -1,9 +1,3 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from .forms import ListingForm
-
-
-# Create your views here.
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm

@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container">
     <h1>All Listings</h1>
-    <a href="{% url 'listings:create_listing' %}" class="btn btn-primary mb-3">Create New Listing</a>
+    <a href="{% url 'listings:prelist' %}" class="btn btn-primary mb-3">Create New Listing</a>
 
     <div class="row">
         {% for listing in listings %}
