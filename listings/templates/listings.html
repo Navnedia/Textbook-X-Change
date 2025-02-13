@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container">
+    <h1>All Listings</h1>
+    <a href="{% url 'listings:create_listing' %}" class="btn btn-primary mb-3">Create New Listing</a>
+
+    <div class="row">
+        {% for listing in listings %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light text-center" style="height: 200px; line-height: 200px;">No Image</div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
+                    <p class="card-text"><strong>ISBN:</strong> {{ listing.isbn }}</p>
+                    <p class="card-text"><strong>Price:</strong> ${{ listing.price }}</p>
+                    <p class="card-text"><strong>Condition:</strong> {{ listing.condition }}</p>
+                    <p class="card-text"><strong>Location:</strong> {{ listing.location }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col text-center">
+            <p>No listings found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
