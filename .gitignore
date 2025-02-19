@@ -401,3 +401,5 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,pycharm,visualstudiocode
 .DS_Store
+
+scraped_results.csv

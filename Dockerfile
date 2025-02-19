@@ -44,6 +44,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
     
 
+RUN python -m pip install Pillow
+
 # Switch to the non-privileged user to run the application.
 USER appuser
 

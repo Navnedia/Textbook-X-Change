@@ -1,4 +1,6 @@
 {% extends "core/base.html" %}
+{% block title %}Sell on Textbook X Change{% endblock title %}
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -119,6 +121,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const isbnField = document.getElementById("id_isbn");
     const nextButton = document.getElementById("next-button");
     const backButton = document.getElementById("back-button");
+
+    // Do first attempt to fetch suggested prices from eBay the ISBN is autofilled on page load.
+    const isbn = isbnField.value.trim();
+    if (isbn) {
+        fetchSuggestedPrice(isbn);
+    }
 
     // When the ISBN field loses focus, trigger the fetch call.
     isbnField.addEventListener("blur", function() {

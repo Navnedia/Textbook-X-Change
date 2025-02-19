@@ -1,0 +1,21 @@
+{% extends "core/base.html" %}
+{% block title %}List a Textbook{% endblock title %}
+
+{% block content %}
+<div class="container text-center mt-5">
+        <h1 class="text-center">Start your listing</h1>
+
+        <form action="{% url 'listings:prelist' %}" method="POST" class="row g-3 w-100 mb-5">
+            {% csrf_token %}
+            <div class="col-8">{{ form.isbn }}</div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success px-5">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+
+        <a href="{% url 'listings:create_listing' %}">Continue with Manual Listing</a>
+</div>
+{% endblock %}

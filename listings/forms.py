@@ -1,6 +1,20 @@
 from django import forms
 from .models import Listing
 
+
+class PrelistForm(forms.Form):
+    # For now, the form will only accept an ISBN number, but we might allow 
+    # it to accept details like the title or author in the future.
+    isbn = forms.CharField(
+        max_length=14,
+        required=True, 
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Enter the ISBN'}
+        )
+    )
+
+
 class ListingForm(forms.ModelForm):
     class Meta:
         model=Listing
