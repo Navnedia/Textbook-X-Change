@@ -5,7 +5,6 @@ from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
 # Create your views here:
 
-
 def prelist(request: HttpRequest) -> HttpResponse:
     if request.POST:
         form = PrelistForm(request.POST)

@@ -1,25 +1,39 @@
 {% extends "core/base.html" %}
+
+{% block title %}Browse Textbook Listings{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>All Listings</h1>
-    <a href="{% url 'listings:prelist' %}" class="btn btn-primary mb-3">Create New Listing</a>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Available Textbooks</h2>
 
     <div class="row">
         {% for listing in listings %}
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 {% if listing.image %}
-                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <img src="{{ listing.image.url }}" 
+                         alt="{{ listing.title }}" 
+                         class="card-img-top" 
+                         style="height: 200px; object-fit: cover;">
                 {% else %}
-                    <div class="card-img-top bg-light text-center" style="height: 200px; line-height: 200px;">No Image</div>
+                    <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
+                    <p class="card-text fw-bold mb-0 fs-5">${{ listing.price }}</p>
+                    <p class="card-text text-body-secondary">{{ listing.location }}</p>
                     <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
                     <p class="card-text"><strong>ISBN:</strong> {{ listing.isbn }}</p>
-                    <p class="card-text"><strong>Price:</strong> ${{ listing.price }}</p>
-                    <p class="card-text"><strong>Condition:</strong> {{ listing.condition }}</p>
-                    <p class="card-text"><strong>Location:</strong> {{ listing.location }}</p>
+
+                    <a href="#" class="btn btn-primary btn-sm view-details-btn" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detailsModal"
+                        data-title="{{ listing.title }}" 
+                        data-price="${{ listing.price }}"
+                        data-description="This is a great textbook about XYZ.">
+                        View Details
+                    </a>
                 </div>
             </div>
         </div>
@@ -30,4 +44,54 @@
         {% endfor %}
     </div>
 </div>
+
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Textbook Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="modal-title"></span></p>
+                <p><strong>Price:</strong> <span id="modal-price"></span></p>
+                <p><strong>Description:</strong> <span id="modal-description"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Update Modal Content -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById("detailsModal");
+        var modalTitle = document.getElementById("modal-title");
+        var modalPrice = document.getElementById("modal-price");
+        var modalDescription = document.getElementById("modal-description");
+
+        document.querySelectorAll(".view-details-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                modalTitle.innerText = this.getAttribute("data-title");
+                modalPrice.innerText = this.getAttribute("data-price");
+                modalDescription.innerText = this.getAttribute("data-description");
+            });
+        });
+    });
+</script>
+
+<!-- Bootstrap Styling -->
+<style>
+    .card {
+        border: none;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .card-body h6 {
+        font-size: 0.9rem;
+    }
+</style>
 {% endblock %}
