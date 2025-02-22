@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'fontawesomefree',
     "core",
-    "listings"
+    "listings",
+    "cart"
 ]
 
 MIDDLEWARE = [
