@@ -32,8 +32,20 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
 
 
 def listing_page(request):
-    listings = Listing.objects.all().order_by("-id")  
+    #adding an item to the cart via POST
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        if listing_id:
+            listing_id = int(listing_id)
+            cart = request.session.get("cart", [])
+            if listing_id not in cart:
+                cart.append(listing_id)
+            request.session["cart"] = cart
+        return redirect("listings:listing_page")
+    #For GET requests, simply display the listings
+    listings = Listing.objects.all().order_by("-id")
     return render(request, "listings.html", {"listings": listings})
+
 
 #############################################################################################################################################
 #refactored guiseppes code and used ai

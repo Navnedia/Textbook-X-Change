@@ -1,7 +1,39 @@
 {% extends "core/base.html" %}
-{% comment %} Use shared styles and navbar from the base template. {% endcomment %}
 {% block title %}Cart | Textbook X Change{% endblock %}
 
 {% block content %}
-    {% comment %} Define content on the cart page {% endcomment %}
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Your Cart</h2>
+    <div class="row">
+      {% for item in cart_items %}
+      <!-- Display items in cart -->
+      <div class="col-md-4 listing-card">
+        <div class="card shadow-sm">
+          {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+          {% else %}
+            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ item.title }}</h5>
+            <p class="card-text"><strong>Author:</strong> {{ item.author }}</p>
+            <p class="card-text fw-bold mb-0 fs-5">${{ item.price }}</p>
+            <!-- Remove button -->
+            <form method="post" action="">
+              {% csrf_token %}
+              <input type="hidden" name="remove_listing_id" value="{{ item.id }}">
+              <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+              <!-- Checkout button and logic created with the help of Chat -->
+              <a href="{% url 'cart:checkout' item.id %}" class="btn btn-primary btn-sm mt-2">Proceed to Checkout</a>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col text-center">
+        <p>Your cart is empty.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}
