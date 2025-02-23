@@ -55,6 +55,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+import traceback
 
 # Define your CSV file path
 CSV_FILE_PATH = "scraped_results.csv"
@@ -116,8 +117,9 @@ class EbayPriceScraperView(View):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920x1080")
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver = webdriver.Remote(
+            command_executor="http://chromium:4444/wd/hub", 
+            options=chrome_options)
 
         try:
             ebay_url = f"https://www.ebay.com/sch/i.html?_nkw={isbn}+textbook"
@@ -205,6 +207,7 @@ class EbayPriceScraperView(View):
             data = self.scrape_data(isbn)
             return JsonResponse(data)
         except Exception as e:
+            print(traceback.format_exc())
             return JsonResponse({"error": str(e)}, status=500)
 
     def post(self, request):
