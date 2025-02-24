@@ -166,11 +166,11 @@ class EbayPriceScraperView(View):
             suggested_list_price_used, suggested_buy_price_used = calculate_suggested_prices(prices_used_filtered)
 
             # Save results to CSV
-            save_to_csv(
-                isbn, median_price_new, q1_price_new, q3_price_new, 
-                median_price_used, q1_price_used, q3_price_used, 
-                suggested_list_price_used, suggested_buy_price_used
-            )
+            # save_to_csv(
+            #     isbn, median_price_new, q1_price_new, q3_price_new, 
+            #     median_price_used, q1_price_used, q3_price_used, 
+            #     suggested_list_price_used, suggested_buy_price_used
+            # )
 
             return {
                 "isbn": isbn,
