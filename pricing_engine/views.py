@@ -60,11 +60,37 @@ def remove_outliers(prices):
 #             suggested_list_price_used, suggested_buy_price_used
 #         ])
 
-def is_valid_isbn10(isbn):
+def is_valid_isbn(isbn):
     cleaned_isbn = isbn.replace("-", "")
     isbn10_pattern = r"^\d{9}[\dX]$"
     isbn13_pattern = r"^\d{13}$"
     return bool(re.fullmatch(isbn10_pattern, cleaned_isbn) or re.fullmatch(isbn13_pattern, cleaned_isbn))
+
+
+def compute_stats(prices, sample_size=5):
+    """Compute a stats summary for a list of prices including median, quartiles, and suggested prices."""
+    if not prices:
+        return {
+            "median_price": None,
+            "q1_price": None,
+            "q3_price": None,
+            "suggested_list_price": None,
+            "suggested_buy_price": None,
+            "count": 0,
+            "price_samples": []
+        }
+    
+    suggested_list_price, suggested_buy_price = calculate_suggested_prices(prices)
+
+    return {
+        "median_price": round(np.median(prices), 2),
+        "q1_price": round(np.percentile(prices, 25), 2),
+        "q3_price": round(np.percentile(prices, 75), 2),
+        "suggested_list_price": suggested_list_price,
+        "suggested_buy_price": suggested_buy_price,
+        "count": len(prices),
+        "price_samples": prices[:sample_size]
+    }
 
 
 class EbayPriceScraperView(View):
@@ -110,19 +136,9 @@ class EbayPriceScraperView(View):
             prices_new_filtered = prices_new  # or use remove_outliers(prices_new)
             prices_used_filtered = remove_outliers(prices_used)
 
-            # Compute price statistics for new books
-            median_price_new = round(np.median(prices_new_filtered), 2) if prices_new_filtered else None
-            q1_price_new = round(np.percentile(prices_new_filtered, 25), 2) if prices_new_filtered else None
-            q3_price_new = round(np.percentile(prices_new_filtered, 75), 2) if prices_new_filtered else None
-
-            # Compute price statistics for used books
-            median_price_used = round(np.median(prices_used_filtered), 2) if prices_used_filtered else None
-            q1_price_used = round(np.percentile(prices_used_filtered, 25), 2) if prices_used_filtered else None
-            q3_price_used = round(np.percentile(prices_used_filtered, 75), 2) if prices_used_filtered else None
-
-            # Calculate suggested prices for used books only
-            suggested_list_price_used, suggested_buy_price_used = calculate_suggested_prices(prices_used_filtered)
-
+            new_stats = compute_stats(prices_new_filtered)
+            used_stats = compute_stats(prices_used_filtered)
+            
             # Save results to CSV
             # save_to_csv(
             #     isbn, median_price_new, q1_price_new, q3_price_new, 
@@ -132,23 +148,9 @@ class EbayPriceScraperView(View):
 
             return {
                 "isbn": isbn,
-                "listings_found": len(prices_new) + len(prices_used),
-                "new": {
-                    "median_price": median_price_new,
-                    "q1_price": q1_price_new,
-                    "q3_price": q3_price_new,
-                    "count": len(prices_new),
-                    "price_samples": prices_new_filtered[:5]
-                },
-                "used": {
-                    "median_price": median_price_used,
-                    "q1_price": q1_price_used,
-                    "q3_price": q3_price_used,
-                    "suggested_list_price": suggested_list_price_used,
-                    "suggested_buy_price": suggested_buy_price_used,
-                    "count": len(prices_used),
-                    "price_samples": prices_used_filtered[:5]
-                }
+                "listings_found": len(prices_new_filtered) + len(prices_used_filtered),
+                "new": new_stats,
+                "used": used_stats
             }
         except Exception as e:
             driver.quit()
@@ -158,7 +160,7 @@ class EbayPriceScraperView(View):
         isbn = request.GET.get("isbn")
         if not isbn:
             return JsonResponse({"error": "Missing ISBN"}, status=400)
-        if not is_valid_isbn10(isbn):
+        if not is_valid_isbn(isbn):
             return JsonResponse({"error": "Invalid ISBN"}, status=400)
 
         try:
