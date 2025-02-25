@@ -1,23 +1,18 @@
+from django.http import JsonResponse
+from django.views import View
+
+# Selenium and other related imports...
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import re
 import os
 import csv
 import numpy as np
 
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views import View
-
-# Selenium and other imports...
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
-from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, JsonResponse
 
 # Define your CSV file path
 # CSV_FILE_PATH = "scraped_results.csv"
@@ -70,6 +65,7 @@ def is_valid_isbn10(isbn):
     isbn10_pattern = r"^\d{9}[\dX]$"
     isbn13_pattern = r"^\d{13}$"
     return bool(re.fullmatch(isbn10_pattern, cleaned_isbn) or re.fullmatch(isbn13_pattern, cleaned_isbn))
+
 
 class EbayPriceScraperView(View):
     def scrape_data(self, isbn):
@@ -170,13 +166,4 @@ class EbayPriceScraperView(View):
             return JsonResponse(data)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-
-    def post(self, request):
-        isbn = request.POST.get("isbn", "").strip()
-        if not is_valid_isbn10(isbn):
-            return render(request, "landing.html", {"error": "Please enter a valid ISBN."})
-        try:
-            data = self.scrape_data(isbn)
-            return render(request, "landing.html", data)
-        except Exception as e:
-            return render(request, "landing.html", {"error": str(e)})
+        
