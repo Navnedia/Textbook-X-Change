@@ -3,6 +3,23 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
+from django.shortcuts import render
+from django.views import View
+import re
+import os
+import csv
+import numpy as np
+
+
+# Selenium and other imports...
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+
 # Create your views here:
 
 def prelist(request: HttpRequest) -> HttpResponse:
@@ -22,7 +39,7 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
         form = ListingForm(request.POST, request.FILES)    
         if form.is_valid():
             form.save()
-            return redirect("listings:listing_page") 
+            return redirect("listings:dashboard") 
         else:
             print(form.errors)
 
@@ -37,24 +54,6 @@ def listing_page(request):
 
 #############################################################################################################################################
 #refactored guiseppes code and used ai
-
-import re
-import os
-import csv
-import numpy as np
-
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views import View
-
-# Selenium and other imports...
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Define your CSV file path
 CSV_FILE_PATH = "scraped_results.csv"
@@ -216,3 +215,27 @@ class EbayPriceScraperView(View):
             return render(request, "landing.html", data)
         except Exception as e:
             return render(request, "landing.html", {"error": str(e)})
+
+#############################################################################################################################################
+# create dashboard view, to show the sellers listings and manage them (SELLERS POV)
+
+def dashboard(request):
+    listings = Listing.objects.all().order_by("-id")
+    return render(request, "dashboard.html", {"listings": listings})
+
+def edit_listing(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        form = ListingForm(request.POST, request.FILES, instance=listing)
+        if form.is_valid():
+            form.save()
+            return redirect("listings:dashboard")
+    else:
+        form = ListingForm(instance=listing)
+    return render(request, "edit_listing.html", {"form": form})
+
+def delete_listing(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)    
+    listing.delete()
+    return redirect("listings:dashboard")       
+#############################################################################################################################################
