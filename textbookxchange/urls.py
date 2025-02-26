@@ -23,7 +23,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("core.urls")),
-    path("listings/", include("listings.urls", namespace='listings')),
+    path("listings/", include("listings.urls")),
+    path("login/", include("login.urls")),
     path("cart/", include("cart.urls", namespace='cart')),
 ]
 if settings.DEBUG:

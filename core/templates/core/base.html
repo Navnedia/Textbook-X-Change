@@ -62,7 +62,20 @@
                         <a href="#" class="nav-link">
                             <i class="fa fa-user"></i>
                         </a>
+                        <a href="#" class="nav-link">Browse</a>
+                        <a href="#" class="nav-link">Sell</a>
+                    
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Logout</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-outline-primary">Login</a>
+                        {% endif %}
                     </div>
+                    
+                    
                 </div>
             </div>
         </nav>
@@ -76,6 +89,8 @@
                 {% endfor %}
             </div>
         {% endif %}
+
+        
 
         <div class="container">{% block content %}{% endblock content %}</div>
     </body>
