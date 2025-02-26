@@ -3,6 +3,8 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
+from django.shortcuts import get_object_or_404
+
 # Create your views here:
 
 def prelist(request: HttpRequest) -> HttpResponse:
@@ -46,6 +48,10 @@ def listing_page(request):
     listings = Listing.objects.all().order_by("-id")
     return render(request, "listings.html", {"listings": listings})
 
+
+def textbook_details(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    return render(request, "textbook_details.html", {"listing": listing})
 
 #############################################################################################################################################
 #refactored guiseppes code and used ai
