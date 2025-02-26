@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     "core",
     "listings",
-    "login",,
+    "login",
     "cart"
 ]
 
