@@ -33,19 +33,17 @@
 
         <!-- Add to Cart Button -->
         <div class="d-flex justify-content-end mt-3">
-            <button class="btn btn-secondary">Add to Cart</button>
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <button type="submit" class="btn btn-secondary">Add to Cart</button>
+            </form>
         </div>
     </div>
 </div>
 
 <!-- Bangers Font with Adjusted Sizes -->
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-
-    .bangers-font {
-        font-family: 'Bangers', cursive;
-    }
-
     .title-large {
         font-size: 4rem; /* ✅ Large "Textbook Details" title */
         letter-spacing: 2px;

@@ -1,6 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest, HttpResponse
 
-
-def home_view(request):
-    return render(request, "core/index.html")  
+# Define core views here (only if logic is needed, otherwise the TemplateView can be used in urls for static pages):

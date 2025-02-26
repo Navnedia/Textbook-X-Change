@@ -1,18 +1,9 @@
 {% extends "core/base.html" %}
+{% block title %}About | Textbook X Change{% endblock title %}
 {% load static %}  <!-- Load static files in Django -->
 
-{% block content %}
-    <!-- Load Google Font (Bangers) -->
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+{% block styles %}
     <style>
-        .bangers-font {
-            font-family: 'Bangers', cursive;
-            font-size: 4rem; /* Reduced font size */
-            letter-spacing: 5px; /* Adjusted spacing between letters */
-            text-transform: uppercase;
-            margin-bottom: 20px; /* Increased spacing below titles */
-        }
-
         .less-italic {
             font-style: oblique 8deg;
             font-size: 3.5rem /* Slight slant instead of full italic */
@@ -87,9 +78,10 @@
         .social-icons a:hover {
             color: #007bff;
         }
-
     </style>
+{% endblock styles %}
 
+{% block content %}
     <!-- Breadcrumb -->
     <div class="container mt-3">
         <nav aria-label="breadcrumb">

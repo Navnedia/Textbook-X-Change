@@ -51,6 +51,17 @@ def listing_page(request):
 
 def textbook_details(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
+
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        if listing_id:
+            listing_id = int(listing_id)
+            cart = request.session.get("cart", [])
+            if listing_id not in cart:
+                cart.append(listing_id)
+            request.session["cart"] = cart
+        return redirect("cart:cart")
+
     return render(request, "textbook_details.html", {"listing": listing})
 
 #############################################################################################################################################
