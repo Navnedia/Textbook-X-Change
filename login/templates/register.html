@@ -33,6 +33,14 @@
             </div>
 
             <div class="mb-3">
+                <label for="school" class="form-label">School/University</label>
+                <input type="text" id="school" name="school" class="form-control" required>
+                {% if school_error %}
+                <div class="text-danger">{{ school_error }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
                 <label for="password1" class="form-label">Password</label>
                 <input type="password" id="password1" name="password1" class="form-control" required>
             </div>
