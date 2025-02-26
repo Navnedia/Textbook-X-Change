@@ -14,6 +14,12 @@ services:
      - postgres_data:/var/lib/postgresql/data
    env_file:
      - .env
+
+ chromium:
+   image: selenium/standalone-chromium:latest
+   hostname: chromium
+   privileged: true
+   shm_size: 2g
  
  django-web:
    build: .
@@ -31,6 +37,7 @@ services:
      - "8000:8000"
    depends_on:
      - db
+     - chromium
    environment:
      DJANGO_SECRET_KEY: ${DJANGO_KEY}
      DEBUG: ${DEBUG}

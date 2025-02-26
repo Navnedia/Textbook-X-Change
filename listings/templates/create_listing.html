@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function fetchSuggestedPrice(isbn) {
         if (!isbn) return;
 
-        fetch("{% url 'listings:fetch_ebay_price' %}?isbn=" + isbn)
+        fetch("{% url 'pricing_engine:get_suggestions' %}?isbn=" + isbn)
             .then(response => response.json())
             .then(data => {
                 const usedData = data.used || {};

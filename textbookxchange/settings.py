@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "core",
     "listings",
     "login",
-    "cart"
+    "cart",
+    "pricing_engine"
 ]
 
 MIDDLEWARE = [
