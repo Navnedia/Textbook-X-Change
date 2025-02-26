@@ -4,4 +4,18 @@ from . import views
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="core/index.html"), name="index"),
+    path("about/", TemplateView.as_view(template_name="core/about.html"), name="about"),  # About Page
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'fontawesomefree',
     "core",
-    "listings"
+    "listings",
+    "login",
+    "cart",
+    "pricing_engine"
 ]
 
 MIDDLEWARE = [
@@ -57,15 +60,15 @@ ROOT_URLCONF = "textbookxchange.urls"
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / "templates"],  # Ensure templates folder is registered
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -110,6 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Login page URL when user is not authenticated
 # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-LOGIN_URL
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -132,6 +136,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'text.book.x.change0101@gmail.com'
+EMAIL_HOST_PASSWORD = 'fund voht vuyj shup'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # MEDIA CONFIGURATION
 MEDIA_URL = "/media/"  # URL to access uploaded files

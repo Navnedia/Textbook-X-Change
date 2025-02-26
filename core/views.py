@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 
-# Define core related views here:
+# Define core views here (only if logic is needed, otherwise the TemplateView can be used in urls for static pages):

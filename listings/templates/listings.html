@@ -3,13 +3,16 @@
 {% block title %}Browse Textbook Listings{% endblock %}
 
 {% block content %}
+<!-- Ensure Bangers font is loaded -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Available Textbooks</h2>
+    <h2 class="text-center mb-4 bangers-font">Available Textbooks</h2>
 
     <div class="row">
         {% for listing in listings %}
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm position-relative">
                 {% if listing.image %}
                     <img src="{{ listing.image.url }}" 
                          alt="{{ listing.title }}" 
@@ -24,16 +27,28 @@
                     <p class="card-text fw-bold mb-0 fs-5">${{ listing.price }}</p>
                     <p class="card-text text-body-secondary">{{ listing.location }}</p>
                     <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
-                    <p class="card-text"><strong>ISBN:</strong> {{ listing.isbn }}</p>
-
-                    <a href="#" class="btn btn-primary btn-sm view-details-btn" 
+                    <p class="card-text pb-4"><strong>ISBN:</strong> {{ listing.isbn }}</p>
+                    
+                    {% comment %} <a href="#" class="btn btn-primary btn-sm view-details-btn" 
                         data-bs-toggle="modal" 
                         data-bs-target="#detailsModal"
                         data-title="{{ listing.title }}" 
                         data-price="${{ listing.price }}"
                         data-description="This is a great textbook about XYZ.">
                         View Details
-                    </a>
+                    </a> {% endcomment %}
+
+                    <a href="{% url "listings:textbook_details" listing.id %}" class="stretched-link"></a>
+                    <div class="card-text">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                            <button type="submit" class="btn add-to-cart btn-success z-1">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -44,7 +59,6 @@
         {% endfor %}
     </div>
 </div>
-
 
 <!-- Bootstrap Modal -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
@@ -59,17 +73,20 @@
                 <p><strong>Price:</strong> <span id="modal-price"></span></p>
                 <p><strong>Description:</strong> <span id="modal-description"></span></p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex justify-content-between">
+                <!-- Placeholder link for future textbook page -->
+                <a href="#" class="text-primary text-decoration-none" id="visit-textbook-link">Visit Textbook's Page</a>
+
+                <!-- Close button -->
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript to Update Modal Content -->
+<!-- JavaScript for Modal & Cart Functionality -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var modal = document.getElementById("detailsModal");
         var modalTitle = document.getElementById("modal-title");
         var modalPrice = document.getElementById("modal-price");
         var modalDescription = document.getElementById("modal-description");
@@ -84,14 +101,37 @@
     });
 </script>
 
-<!-- Bootstrap Styling -->
+<!-- Styling -->
 <style>
     .card {
         border: none;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
+
     .card-body h6 {
         font-size: 0.9rem;
+    }
+
+    /* Plus Button for Add to Cart */
+    .add-to-cart {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        background-color: grey; /* Grey background */
+        color: white; /* White icon color */
+        border: none;
+        transition: background-color 0.2s ease;
+    }
+
+    .add-to-cart:hover {
+        background-color: darkgrey; /* Slightly darker grey on hover */
     }
 </style>
 {% endblock %}
