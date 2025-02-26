@@ -16,13 +16,13 @@
     <!-- Listings Display as Rows -->
     <div class="list-group">
         {% for listing in listings %}
-        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm">
+        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
             
             <div class="me-3">
                 {% if listing.image %}
                     <img src="{{ listing.image.url }}" class="img-thumbnail" width="80" height="80" alt="{{ listing.title }}">
                 {% else %}
-                    <img src="https://via.placeholder.com/80" class="img-thumbnail" alt="No Image">
+                    <img src="https://placehold.co/80" class="img-thumbnail" alt="No Image">
                 {% endif %}
             </div>
 
