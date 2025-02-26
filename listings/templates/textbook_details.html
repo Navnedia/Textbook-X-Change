@@ -1,0 +1,59 @@
+{% extends "core/base.html" %}
+
+{% block title %}Textbook Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center text-uppercase bangers-font title-large mb-4">Textbook Details</h1> <!-- ✅ Large Title -->
+
+    <div class="card shadow-sm p-3">
+        <div class="row g-0">
+            <!-- Image Section -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center bg-light">
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}" class="img-fluid rounded" alt="{{ listing.title }}">
+                {% else %}
+                    <div class="text-muted text-center">No Image Available</div>
+                {% endif %}
+            </div>
+
+            <!-- Textbook Details Section -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h3 class="card-title bangers-font text-uppercase title-small">{{ listing.title }}</h3> <!-- ✅ Smaller Textbook Title -->
+                    <p class="fw-bold text-primary fs-4">${{ listing.price }}</p>
+                    <p><span class="fw-bold">Author:</span> {{ listing.author }}</p>
+                    <p><span class="fw-bold">ISBN:</span> {{ listing.isbn }}</p>
+                    <p><span class="fw-bold">Description:</span> {{ listing.description }}</p>
+                    <p><span class="fw-bold">Condition:</span> {{ listing.condition }}</p>
+                    <p><span class="fw-bold">Location:</span> {{ listing.location }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add to Cart Button -->
+        <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-secondary">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bangers Font with Adjusted Sizes -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+    .bangers-font {
+        font-family: 'Bangers', cursive;
+    }
+
+    .title-large {
+        font-size: 4rem; /* ✅ Large "Textbook Details" title */
+        letter-spacing: 2px;
+    }
+
+    .title-small {
+        font-size: 1.8rem; /* ✅ Smaller Textbook Title */
+    }
+</style>
+
+{% endblock %}

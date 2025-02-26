@@ -18,11 +18,19 @@
         <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         {% endblock styles %}
 
-        <!-- Include Font Awesome Icons -->
-        <script src="{% static 'fontawesomefree/js/fontawesome.min.js' %}"></script>
-        <script src="{% static 'fontawesomefree/js/regular.min.js' %}"></script>
-        <script src="{% static 'fontawesomefree/js/solid.min.js' %}"></script>
-    </head>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        .bangers-font {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+    
     <body>
         <!-- Navbar Header section -->
         <nav class="navbar navbar-expand-md py-md-4 bg-body-tertiary">
