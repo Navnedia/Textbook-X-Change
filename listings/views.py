@@ -1,12 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
-from django.shortcuts import get_object_or_404
 
-# Create your views here:
-
+# Prelist View
 def prelist(request: HttpRequest) -> HttpResponse:
     if request.POST:
         form = PrelistForm(request.POST)
@@ -18,7 +16,7 @@ def prelist(request: HttpRequest) -> HttpResponse:
 
     return render(request, "prelist.html", {"form": PrelistForm()})
 
-
+# Create Listing View
 def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
     if not autofill_data and request.method == "POST":
         form = ListingForm(request.POST, request.FILES)    
@@ -32,17 +30,29 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
         form = ListingForm(instance=autofill_data)
     return render(request, "create_listing.html", {"form": form})
 
-
+# Listing Page with Filtering
 def listing_page(request):
-    listings = Listing.objects.all().order_by("-id")  
-    return render(request, "listings.html", {"listings": listings})
+    location_filter = request.GET.get("location", "All")
 
+    if location_filter == "Global":
+        listings = Listing.objects.filter(location="Global").order_by("-id")
+    elif location_filter == "Local":
+        listings = Listing.objects.filter(location="Local").order_by("-id")
+    else:
+        listings = Listing.objects.all().order_by("-id")  # Default: Show all listings
+
+    return render(request, "listings.html", {
+        "listings": listings,
+        "location_filter": location_filter
+    })
+
+# Textbook Details View
 def textbook_details(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
     return render(request, "textbook_details.html", {"listing": listing})
 
-#############################################################################################################################################
-#refactored guiseppes code and used ai
+############################################################################################################################
+# Refactored code using AI for enhanced readability and maintainability
 
 import re
 import os
@@ -62,7 +72,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Define your CSV file path
+# Define CSV file path
 CSV_FILE_PATH = "scraped_results.csv"
 
 def calculate_suggested_prices(prices):
@@ -72,7 +82,7 @@ def calculate_suggested_prices(prices):
     q3 = np.percentile(prices, 75)
     median = np.median(prices)
     price_spread = max(prices) - min(prices)
-    suggested_list_price = median  # For example, use the median
+    suggested_list_price = median  # Example: Use the median
     suggested_buy_price = round(q1 + (0.1 * price_spread), 2)
     return suggested_list_price, suggested_buy_price
 
@@ -153,7 +163,7 @@ class EbayPriceScraperView(View):
             driver.quit()
 
             # Remove outliers from new and used prices
-            prices_new_filtered = prices_new  # or use remove_outliers(prices_new)
+            prices_new_filtered = prices_new
             prices_used_filtered = remove_outliers(prices_used)
 
             # Compute price statistics for new books
@@ -179,22 +189,8 @@ class EbayPriceScraperView(View):
             return {
                 "isbn": isbn,
                 "listings_found": len(prices_new) + len(prices_used),
-                "new": {
-                    "median_price": median_price_new,
-                    "q1_price": q1_price_new,
-                    "q3_price": q3_price_new,
-                    "count": len(prices_new),
-                    "price_samples": prices_new_filtered[:5]
-                },
-                "used": {
-                    "median_price": median_price_used,
-                    "q1_price": q1_price_used,
-                    "q3_price": q3_price_used,
-                    "suggested_list_price": suggested_list_price_used,
-                    "suggested_buy_price": suggested_buy_price_used,
-                    "count": len(prices_used),
-                    "price_samples": prices_used_filtered[:5]
-                }
+                "new": {"median_price": median_price_new, "q1_price": q1_price_new, "q3_price": q3_price_new},
+                "used": {"median_price": median_price_used, "q1_price": q1_price_used, "q3_price": q3_price_used}
             }
         except Exception as e:
             driver.quit()
@@ -212,13 +208,3 @@ class EbayPriceScraperView(View):
             return JsonResponse(data)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-
-    def post(self, request):
-        isbn = request.POST.get("isbn", "").strip()
-        if not is_valid_isbn10(isbn):
-            return render(request, "landing.html", {"error": "Please enter a valid ISBN."})
-        try:
-            data = self.scrape_data(isbn)
-            return render(request, "landing.html", data)
-        except Exception as e:
-            return render(request, "landing.html", {"error": str(e)})
