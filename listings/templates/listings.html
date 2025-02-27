@@ -1,137 +1,116 @@
 {% extends "core/base.html" %}
-
 {% block title %}Browse Textbook Listings{% endblock %}
 
-{% block content %}
-<!-- Ensure Bangers font is loaded -->
-<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+{% block styles %}
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
+        .add-to-cart {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            background-color: grey;
+            color: white;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-to-cart:hover {
+            background-color: darkgrey;
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Available Textbooks</h2>
 
     <div class="row">
-        {% for listing in listings %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm position-relative">
-                {% if listing.image %}
-                    <img src="{{ listing.image.url }}" 
-                         alt="{{ listing.title }}" 
-                         class="card-img-top" 
-                         style="height: 200px; object-fit: cover;">
-                {% else %}
-                    <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ listing.title }}</h5>
-                    <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
-                    <p class="card-text fw-bold mb-0 fs-5">${{ listing.price }}</p>
-                    <p class="card-text text-body-secondary">{{ listing.location }}</p>
-                    <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
-                    <p class="card-text pb-4"><strong>ISBN:</strong> {{ listing.isbn }}</p>
-                    
-                    {% comment %} <a href="#" class="btn btn-primary btn-sm view-details-btn" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#detailsModal"
-                        data-title="{{ listing.title }}" 
-                        data-price="${{ listing.price }}"
-                        data-description="This is a great textbook about XYZ.">
-                        View Details
-                    </a> {% endcomment %}
-
-                    <a href="{% url "listings:textbook_details" listing.id %}" class="stretched-link"></a>
-                    <div class="card-text">
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                            <button type="submit" class="btn add-to-cart btn-success z-1">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </form>
+        <!-- Left Sidebar: Filter Options -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="fw-bold">Filter by Location</h5>
+                <form method="GET" action="{% url 'listings:listing_page' %}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="location" id="all" value="All" 
+                            {% if location_filter == "All" %}checked{% endif %}>
+                        <label class="form-check-label" for="all">All</label>
                     </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="location" id="global" value="Global" 
+                            {% if location_filter == "Global" %}checked{% endif %}>
+                        <label class="form-check-label" for="global">Global</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="location" id="local" value="Local" 
+                            {% if location_filter == "Local" %}checked{% endif %}>
+                        <label class="form-check-label" for="local">Local</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm mt-3">Apply Filter</button>
+                </form>
 
+                <!-- Request a Textbook Button (Placeholder) -->
+                <button class="btn btn-secondary mt-4 w-100" onclick="alert('Request Textbook functionality coming soon!')">
+                    Request a Textbook
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Section: Listings -->
+        <div class="col-md-9">
+            <div class="row">
+                {% for listing in listings %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm position-relative">
+                        {% if listing.image %}
+                            <img src="{{ listing.image.url }}" 
+                                alt="{{ listing.title }}" 
+                                class="card-img-top" 
+                                style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                            <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
+                            <p class="card-text fw-bold mb-0 fs-5">${{ listing.price }}</p>
+                            <p class="card-text text-body-secondary">{{ listing.location }}</p>
+                            <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
+                            <p class="card-text pb-4"><strong>ISBN:</strong> {{ listing.isbn }}</p>
+
+                            {% comment %} This details page link is hidden and stretched wrap the whole card making it clickable. {% endcomment %}
+                            <a href="{% url "listings:textbook_details" listing.id %}" class="stretched-link"></a>
+
+                            <div class="card-text">
+                                {% comment %} Add to item to card form plus button. {% endcomment %}
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    <button type="submit" class="btn add-to-cart btn-success z-1">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col text-center">
-            <p>No listings found.</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Bootstrap Modal -->
-<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailsModalLabel">Textbook Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Title:</strong> <span id="modal-title"></span></p>
-                <p><strong>Price:</strong> <span id="modal-price"></span></p>
-                <p><strong>Description:</strong> <span id="modal-description"></span></p>
-            </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <!-- Placeholder link for future textbook page -->
-                <a href="#" class="text-primary text-decoration-none" id="visit-textbook-link">Visit Textbook's Page</a>
-
-                <!-- Close button -->
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                {% empty %}
+                <div class="col text-center">
+                    <p>No listings found.</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
-
-<!-- JavaScript for Modal & Cart Functionality -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var modalTitle = document.getElementById("modal-title");
-        var modalPrice = document.getElementById("modal-price");
-        var modalDescription = document.getElementById("modal-description");
-
-        document.querySelectorAll(".view-details-btn").forEach(button => {
-            button.addEventListener("click", function() {
-                modalTitle.innerText = this.getAttribute("data-title");
-                modalPrice.innerText = this.getAttribute("data-price");
-                modalDescription.innerText = this.getAttribute("data-description");
-            });
-        });
-    });
-</script>
-
-<!-- Styling -->
-<style>
-    .card {
-        border: none;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-body h6 {
-        font-size: 0.9rem;
-    }
-
-    /* Plus Button for Add to Cart */
-    .add-to-cart {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 18px;
-        background-color: grey; /* Grey background */
-        color: white; /* White icon color */
-        border: none;
-        transition: background-color 0.2s ease;
-    }
-
-    .add-to-cart:hover {
-        background-color: darkgrey; /* Slightly darker grey on hover */
-    }
-</style>
 {% endblock %}

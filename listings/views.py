@@ -7,6 +7,7 @@ from django.views import View
 
 # Create listing views here:
 
+# Prelist View
 def prelist(request: HttpRequest) -> HttpResponse:
     if request.POST:
         form = PrelistForm(request.POST)
@@ -18,7 +19,7 @@ def prelist(request: HttpRequest) -> HttpResponse:
 
     return render(request, "prelist.html", {"form": PrelistForm()})
 
-
+# Create Listing View
 def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
     if not autofill_data and request.method == "POST":
         form = ListingForm(request.POST, request.FILES)    
@@ -32,9 +33,9 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
         form = ListingForm(instance=autofill_data)
     return render(request, "create_listing.html", {"form": form})
 
-
+# Listing Page with Filtering
 def listing_page(request):
-    #adding an item to the cart via POST
+    # Adding an item to the cart via POST
     if request.method == "POST":
         listing_id = request.POST.get("listing_id")
         if listing_id:
@@ -44,10 +45,23 @@ def listing_page(request):
                 cart.append(listing_id)
             request.session["cart"] = cart
         return redirect("listings:listing_page")
-    #For GET requests, simply display the listings
-    listings = Listing.objects.all().order_by("-id")
-    return render(request, "listings.html", {"listings": listings})
 
+    # For GET requests, simply display listings with selected filters:
+    location_filter = request.GET.get("location", "All")
+
+    if location_filter == "Global":
+        listings = Listing.objects.filter(location="Global").order_by("-id")
+    elif location_filter == "Local":
+        listings = Listing.objects.filter(location="Local").order_by("-id")
+    else:
+        listings = Listing.objects.all().order_by("-id")  # Default: Show all listings
+
+    return render(request, "listings.html", {
+        "listings": listings,
+        "location_filter": location_filter
+    })
+
+# Textbook Details View
 def textbook_details(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
 
@@ -68,6 +82,7 @@ def dashboard(request):
     listings = Listing.objects.all().order_by("-id")
     return render(request, "dashboard.html", {"listings": listings})
 
+
 def edit_listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
@@ -78,6 +93,7 @@ def edit_listing(request, listing_id):
     else:
         form = ListingForm(instance=listing)
     return render(request, "edit_listing.html", {"form": form})
+
 
 def delete_listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)    
