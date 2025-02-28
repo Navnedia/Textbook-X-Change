@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
-from django.views import View
 
 # Create listing views here:
 
@@ -25,7 +24,7 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
         form = ListingForm(request.POST, request.FILES)    
         if form.is_valid():
             form.save()
-            return redirect("listings:dashboard") 
+            return redirect("dashboard:dashboard") 
         else:
             print(form.errors)
 
@@ -78,24 +77,21 @@ def textbook_details(request, pk):
     return render(request, "textbook_details.html", {"listing": listing})
 
 
-def dashboard(request):
-    listings = Listing.objects.all().order_by("-id")
-    return render(request, "dashboard.html", {"listings": listings})
-
-
 def edit_listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES, instance=listing)
         if form.is_valid():
             form.save()
-            return redirect("listings:dashboard")
+            return redirect("dashboard:dashboard")
     else:
         form = ListingForm(instance=listing)
     return render(request, "edit_listing.html", {"form": form})
 
 
-def delete_listing(request, listing_id):
-    listing = Listing.objects.get(pk=listing_id)    
-    listing.delete()
-    return redirect("listings:dashboard")       
+def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
+    try:
+        listing = Listing.objects.get(pk=listing_id)
+        listing.delete()
+    finally:
+        return redirect("dashboard:dashboard")
