@@ -27,6 +27,7 @@ urlpatterns = [
     path("login/", include("login.urls")),
     path("cart/", include("cart.urls", namespace='cart')),
     path("pricing/", include("pricing_engine.urls", namespace='pricing_engine')),
+    path("wishlist/", include("wishlist.urls", namespace='wishlist')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
