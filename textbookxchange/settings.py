@@ -128,11 +128,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -147,8 +142,33 @@ EMAIL_HOST_PASSWORD = 'fund voht vuyj shup'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-# MEDIA CONFIGURATION
-MEDIA_URL = "/media/"  # URL to access uploaded files
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_URL = 'static/'
+
+# Media configuration
+
+MEDIA_URL = "media/"  # URL to access uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Directory to store uploaded files
 
-    
+# Configure S3 Storage backend
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("AWS_S3_ACCESS_KEY_ID"),
+            "secret_key": os.environ.get("AWS_S3_SECRET_ACCESS_KEY"),
+            "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": os.environ.get("AWS_S3_REGION_NAME"),
+            "endpoint_url": os.environ.get("AWS_S3_ENDPOINT_URL") or None,
+            "custom_domain": os.environ.get("AWS_S3_CUSTOM_DOMAIN") 
+                or f"{os.environ.get("AWS_STORAGE_BUCKET_NAME")}.s3.amazonaws.com",
+            "file_overwrite": False,
+            "location": "media",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
