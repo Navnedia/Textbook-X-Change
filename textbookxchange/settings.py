@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     "core",
     "listings",
+    "dashboard",
     "login",
     "cart",
     "pricing_engine",
@@ -128,27 +129,53 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'text.book.x.change0101@gmail.com'
-EMAIL_HOST_PASSWORD = 'fund voht vuyj shup'
+# Configure the email server backend service:
+# https://docs.djangoproject.com/en/5.1/topics/email/#email-backends
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = bool(os.environ.get("EMAIL_USE_TLS"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# If no email host is defined for the backend then we default to a debug console output backend (adequate for development).
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST \
+    else "django.core.mail.backends.console.EmailBackend"
 
-# MEDIA CONFIGURATION
-MEDIA_URL = "/media/"  # URL to access uploaded files
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_URL = 'static/'
+
+# Media configuration
+
+MEDIA_URL = "media/"  # URL to access uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Directory to store uploaded files
 
-    
+# Configure S3 Storage backend
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("AWS_S3_ACCESS_KEY_ID"),
+            "secret_key": os.environ.get("AWS_S3_SECRET_ACCESS_KEY"),
+            "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": os.environ.get("AWS_S3_REGION_NAME"),
+            "endpoint_url": os.environ.get("AWS_S3_ENDPOINT_URL") or None,
+            "custom_domain": os.environ.get("AWS_S3_CUSTOM_DOMAIN") 
+                or f"{os.environ.get("AWS_STORAGE_BUCKET_NAME")}.s3.amazonaws.com",
+            "file_overwrite": False,
+            "location": "media",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
