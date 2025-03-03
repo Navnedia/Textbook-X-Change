@@ -95,7 +95,9 @@ def edit_listing(request, listing_id):
     return render(request, "edit_listing.html", {"form": form})
 
 
-def delete_listing(request, listing_id):
-    listing = Listing.objects.get(pk=listing_id)    
-    listing.delete()
-    return redirect("listings:dashboard")       
+def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
+    try:
+        listing = Listing.objects.get(pk=listing_id)
+        listing.delete()
+    finally:
+        return redirect("dashboard:dashboard")
