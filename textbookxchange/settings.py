@@ -133,13 +133,19 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'text.book.x.change0101@gmail.com'
-EMAIL_HOST_PASSWORD = 'fund voht vuyj shup'
+# Configure the email server backend service:
+# https://docs.djangoproject.com/en/5.1/topics/email/#email-backends
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = bool(os.environ.get("EMAIL_USE_TLS"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# If no email host is defined for the backend then we default to a debug console output backend (adequate for development).
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST \
+    else "django.core.mail.backends.console.EmailBackend"
 
 
 # Static files (CSS, JavaScript, Images)
