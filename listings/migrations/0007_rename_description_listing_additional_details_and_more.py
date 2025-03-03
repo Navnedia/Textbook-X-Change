@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                     ("A", "Acceptable"),
                 ],
                 default="N",
-                max_length=3,
+                max_length=20,
             ),
         ),
         migrations.AlterField(

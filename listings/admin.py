@@ -1,11 +1,5 @@
 from django.contrib import admin
+from .models import Listing
 
-# Register your models here.
-from django.contrib import admin
-from .models import Listing, Course, Book, Author
-
-# Register your models here.
-admin.site.register(Author)
-admin.site.register(Book)
-admin.site.register(Course)
+# Register Listing models here:
 admin.site.register(Listing)
