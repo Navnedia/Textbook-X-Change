@@ -49,9 +49,9 @@ def listing_page(request):
     location_filter = request.GET.get("location", "All")
 
     if location_filter == "Global":
-        listings = Listing.objects.filter(location="Global").order_by("-id")
+        listings = Listing.objects.filter(location="G").order_by("-id")
     elif location_filter == "Local":
-        listings = Listing.objects.filter(location="Local").order_by("-id")
+        listings = Listing.objects.filter(location="L").order_by("-id")
     else:
         listings = Listing.objects.all().order_by("-id")  # Default: Show all listings
 
