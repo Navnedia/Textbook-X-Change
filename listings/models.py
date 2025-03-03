@@ -68,9 +68,9 @@ class Listing(models.Model):
     is_active = models.BooleanField(default=True) # is_active (some sort of way to track the state so we know when to show it or not).
 
 
-    additional_details=models.TextField(null=True, blank=True) #! listing additional details?
-    price=models.DecimalField(max_digits=10, decimal_places=2)
-    image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
+    additional_details = models.TextField(null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to="listing_images/", blank=True, null=True)
 
     class Condition(models.TextChoices):
         NEW = "N", "New"
@@ -84,7 +84,7 @@ class Listing(models.Model):
         LOCAL = "L", "Local"
         GLOBAL = "G", "Global"
 
-    location=models.CharField(max_length=64, choices=Location, default=Location.LOCAL) #! this somehow needs to be a reference to the users university so that we can sort by the university for local/global.
+    location = models.CharField(max_length=64, choices=Location, default=Location.LOCAL) #! this somehow needs to be a reference to the users university so that we can sort by the university for local/global.
     
     #! At least one of these must be selected. 
     allows_local_pickup = models.BooleanField(default=False)
