@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow p-4" style="width: 350px;">
+    <div class="card shadow p-4" style="width: 500px;">
         <h3 class="text-center mb-4">Login</h3>
 
         {% if messages %}
@@ -17,25 +17,66 @@
             {% endfor %}
         {% endif %}
 
+        {% if form.errors %}
+            <div class="alert alert-danger">Your username or password was incorrect. Please try again.</div>
+        {% endif %}
+
+        {% if next %}
+            {% if user.is_authenticated %}
+            <div class="alert alert-info">
+                Your account doesn't have access to this page. To proceed, please login with an account that has access.\
+            </div>
+            {% else %}
+            <div class="alert alert-info">Please login to see this page.</div>
+            {% endif %}
+        {% endif %}
+
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control" required>
+                <div class="input-group">
+                    <span class="input-group-text px-3">@</span>
+                    <div class="form-floating">
+                        {{ form.username }}
+                        <label for="id_username">Username</label>
+                    </div>
+                </div>
+
+                {% comment %} {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
+                {% endif %} {% endcomment %}
             </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+            <div class="mb-4">
+                <div class="form-floating">
+                    {{ form.password }}
+                    <label for="id_password">Password</label>
+                </div>
+
+                {% comment %} {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
+                {% endif %} {% endcomment %}
+
+                <a href="{% url 'password_reset' %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
+                    Forgot Password
+                </a>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+            <button type="submit" value="login" class="btn btn-success w-100">Login</button>
+            <input type="hidden" name="next" value="{{ next }}">
         </form>
 
-        <div class="text-center mt-3">
-            <a href="{% url 'forgot_password' %}">Forgot Password?</a> |
-            <a href="{% url 'register' %}">Register</a>
+        <div class="text-center mt-3 text-body-secondary">
+            Already have an account? 
+            <a href="{% url 'register' %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
+                Register
+            </a>
         </div>
     </div>
 </div>

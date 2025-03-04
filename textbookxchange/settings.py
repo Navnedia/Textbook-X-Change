@@ -116,7 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Login page URL when user is not authenticated
 # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-LOGIN_URL
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -149,6 +150,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST \
     else "django.core.mail.backends.console.EmailBackend"
 
+# Select 2 Theme:
+SELECT2_THEME = "bootstrap-5"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

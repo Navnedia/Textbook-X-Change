@@ -1,10 +1,11 @@
 {% extends "core/base.html" %}
-
 {% block title %}Register | Textbook X Change{% endblock %}
+
+{% block styles %}{{ form.media.css }}{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow p-4" style="width: 400px;">
+    <div class="card shadow p-4" style="width: 500px;">
         <h3 class="text-center mb-4">Register</h3>
 
         {% if messages %}
@@ -17,52 +18,97 @@
             {% endfor %}
         {% endif %}
 
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">{{ error|escape }}</div>
+            {% endfor %}
+        {% endif %}
+
         <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
-
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control" required>
-                {% if username_error %}
-                <div class="text-danger">{{ username_error }}</div>
+                <div class="input-group">
+                    <span class="input-group-text px-3">@</span>
+                    <div class="form-floating">
+                        {{ form.username }}
+                        <label for="id_username">Username</label>
+                    </div>
+                </div>
+
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
                 {% endif %}
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" required>
-                {% if email_error %}
-                <div class="text-danger">{{ email_error }}</div>
+                <div class="form-floating">
+                    {{ form.email }}
+                    <label for="id_email">Email</label>
+                </div>
+
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
                 {% endif %}
             </div>
 
             <div class="mb-3">
-                <label for="school" class="form-label">School/University</label>
-                <input type="text" id="school" name="school" class="form-control" required>
-                {% if school_error %}
-                <div class="text-danger">{{ school_error }}</div>
+                <div class="form-floating">
+                    {{ form.password1 }}
+                    <label for="id_password1">Password</label>
+                </div>
+
+                {% if form.password1.errors %}
+                    {% for error in form.password1.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <div class="form-floating">
+                    {{ form.password2 }}
+                    <label for="id_password2">Confirm Password</label>
+                </div>
+
+                {% if form.password2.errors %}
+                    {% for error in form.password2.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
                 {% endif %}
             </div>
 
             <div class="mb-3">
-                <label for="password1" class="form-label">Password</label>
-                <input type="password" id="password1" name="password1" class="form-control" required>
-            </div>
+                <label for="id_school" class="form-label">School/University</label>
 
-            <div class="mb-3">
-                <label for="password2" class="form-label">Confirm Password</label>
-                <input type="password" id="password2" name="password2" class="form-control" required>
-                {% if password_error %}
-                <div class="text-danger">{{ password_error }}</div>
+                <div class="input-group">
+                    <span class="input-group-text px-3">
+                        <i class="fa-solid fa-school"></i>
+                    </span>
+                    {{ form.school }}
+                </div>
+                
+                {% if form.school.errors %}
+                    {% for error in form.school.errors %}
+                        <div class="form-text text-danger">{{ error|escape }}</div>
+                    {% endfor %}
                 {% endif %}
             </div>
 
             <button type="submit" class="btn btn-success w-100">Register</button>
         </form>
 
-        <div class="text-center mt-3">
-            Already have an account? <a href="{% url 'login' %}">Login</a>
+        <div class="text-center mt-3 text-body-secondary">
+            Already have an account? 
+            <a href="{% url 'login' %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
+                Login
+            </a>
         </div>
     </div>
 </div>
+
+{{ form.media.js }}
 {% endblock %}

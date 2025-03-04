@@ -12,8 +12,10 @@
             
             <!-- Increased space between image and buttons -->
             <div class="mt-4">
-                <a href="{% url 'login' %}" class="btn btn-outline-dark px-4 py-2 me-3">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-dark px-4 py-2">Sign Up</a>
+                {% if user.is_authenticated is False %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-dark px-4 py-2 me-3">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-dark px-4 py-2">Sign Up</a>
+                {% endif %}
             </div>
         </div>
     </section>
