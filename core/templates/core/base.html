@@ -66,6 +66,7 @@
                         </a>
                     
                         {% if user.is_authenticated %}
+                            <span class="nav-link text-dark fw-bold">{{ user.email }}</span>
                             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger">Logout</button>
