@@ -7,7 +7,10 @@ from django.db.models.functions import Lower
 
 class School(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    # Additional data: website domain, geo data (lat/long, state, city, zip).
+    website = models.URLField(null=True, blank=True)
+
+    long = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
+    lat = models.DecimalField(max_digits=22, decimal_places=16, null=True, blank=True)
 
     def __str__(self):
         return self.name
