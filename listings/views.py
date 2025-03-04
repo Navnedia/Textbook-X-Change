@@ -3,10 +3,12 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
+from django.contrib.auth.decorators import login_required
 
 # Create listing views here:
 
 # Prelist View
+@login_required
 def prelist(request: HttpRequest) -> HttpResponse:
     if request.POST:
         form = PrelistForm(request.POST)
@@ -88,7 +90,7 @@ def edit_listing(request, listing_id):
         form = ListingForm(instance=listing)
     return render(request, "edit_listing.html", {"form": form})
 
-
+@login_required
 def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
     try:
         listing = Listing.objects.get(pk=listing_id)
