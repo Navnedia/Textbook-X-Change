@@ -95,3 +95,17 @@ def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
         listing.delete()
     finally:
         return redirect("dashboard:dashboard")
+
+def search_results(request):
+    query = request.GET.get("q")
+    results = Listing.objects.filter(title__icontains=query) if query else []
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        if listing_id:
+            listing_id = int(listing_id)
+            cart = request.session.get("cart", [])
+            if listing_id not in cart:
+                cart.append(listing_id)
+            request.session["cart"] = cart
+    
+    return render(request, "search_results.html", {"query": query, "results": results})
