@@ -16,8 +16,8 @@
     <h1 class="text-center bangers-font title-large mb-4">REQUEST A TEXTBOOK</h1>
 
     <!-- Request Form -->
-    <div class="card shadow-lg p-4 bg-light">
-        <form method="post">
+    <div class="card shadow-lg p-4 custom-grey-box">
+        <form method="post" id="requestForm">
             {% csrf_token %}
             <div class="mb-3">
                 <input type="text" class="form-control text-center fw-bold" placeholder="Book Title (required)" name="book_title" required>
@@ -29,10 +29,12 @@
                 <input type="text" class="form-control text-center fw-bold" placeholder="ISBN (optional)" name="isbn">
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-dark btn-lg">Submit!</button>
+                <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
             </div>
         </form>
-        <p class="text-center text-success mt-3 fw-bold">Success! We will email you once your requested textbook is available</p>
+        <p id="successMessage" class="text-center text-success mt-3 fw-bold" style="display: none;">
+            Success! We will email you once your requested textbook is available
+        </p>
     </div>
 </div>
 
@@ -52,12 +54,26 @@
         padding: 10px;
     }
     
-    .btn-lg {
-        width: 100%;
+    .btn-dark {
+        font-size: 1.2rem;
+    }
+
+    /* Darker grey box */
+    .custom-grey-box {
+        background-color: #d3d3d3; /* Medium-dark grey */
+        border-radius: 8px;
     }
 </style>
 
 <!-- Include Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+
+<!-- JavaScript to Show Success Message -->
+<script>
+    document.getElementById("requestForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form from actually submitting
+        document.getElementById("successMessage").style.display = "block"; // Show success message
+    });
+</script>
 
 {% endblock %}
