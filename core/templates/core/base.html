@@ -48,9 +48,9 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <form class="input-group px-4" role="search">
+                    <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:search_results' %}">
                         <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
-                        <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search">
                     </form>
 
                     <div class="navbar-nav">
@@ -66,8 +66,8 @@
                         </a>
                     
                         {% if user.is_authenticated %}
-                            <span class="nav-link text-dark fw-bold">{{ user.email }}</span>
-                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        <span class="nav-link" >{{ user.email }}</span>
+                        <form action="{% url 'logout' %}" method="post" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger">Logout</button>
                             </form>
@@ -80,7 +80,7 @@
                 </div>
             </div>
         </nav>
-
+        <body style="background-color: #f8f9fa;;"></body>
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
