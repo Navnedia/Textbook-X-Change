@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+
+{% block title %}My Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">My Requests</h1>
+
+    {% if user_requests %}
+    <div class="list-group">
+        {% for request in user_requests %}
+        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
+
+            <!-- Left: Book Details (Title, Author, and ISBN) -->
+            <div class="flex-grow-1">
+                <strong>{{ request.title }}</strong><br> <!-- Book Title in Bold -->
+                <small class="text-muted">by {{ request.author }}</small><br>  <!-- Author in Smaller Font -->
+                <small class="text-muted">ISBN: {{ request.isbn }}</small>  <!-- ISBN -->
+            </div>
+
+            <!-- Right: Actions (Button or any other links you want to add) -->
+            <div class="text-end">
+                <a href="{% url 'wishlist:edit_request' request.id %}" class="btn btn-lg ">
+                    <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
+                </a>
+                <a href="{% url 'wishlist:delete_request' request.id %}" class="btn btn-lg ">
+                    <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center">You haven't made any requests yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

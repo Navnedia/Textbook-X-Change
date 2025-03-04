@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block title %}Edit Request{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Edit Request</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="text" class="form-control text-center fw-bold" placeholder="Book Title" name="book_title" value="{{ request.title }}" required>
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control text-center fw-bold" placeholder="Author" name="author" value="{{ request.author }}" required>
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control text-center fw-bold" placeholder="ISBN" name="isbn" value="{{ request.isbn }}">
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

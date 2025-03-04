@@ -32,9 +32,15 @@
                 <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
             </div>
         </form>
-        <p id="successMessage" class="text-center text-success mt-3 fw-bold" style="display: none;">
-            Success! We will email you once your requested textbook is available
-        </p>
+
+        <!-- Display success message only after form submission -->
+        {% if request.method == "POST" %}
+        <p class="text-center text-success mt-3 fw-bold">Success! We will email you once your requested textbook is available</p>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'wishlist:myrequests' %}" class="btn btn-primary btn-lg">Go to My Requests</a>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -43,25 +49,19 @@
     .bangers-font {
         font-family: 'Bangers', cursive;
     }
-    
+
     .title-large {
         font-size: 2.5rem;
         letter-spacing: 1px;
     }
-    
+
     .form-control {
         font-size: 1.2rem;
         padding: 10px;
     }
-    
-    .btn-dark {
-        font-size: 1.2rem;
-    }
 
-    /* Darker grey box */
-    .custom-grey-box {
-        background-color: #d3d3d3; /* Medium-dark grey */
-        border-radius: 8px;
+    .btn-lg {
+        width: 100%;
     }
 </style>
 
