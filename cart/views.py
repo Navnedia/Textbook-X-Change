@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from listings.models import Listing
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 # Create views related to the cart and checkout functionality:
 
 def cart_view(request):
@@ -20,6 +21,7 @@ def cart_view(request):
     cart_items = Listing.objects.filter(id__in=cart_item_ids)
     return render(request, "cart/cart.html", {"cart_items": cart_items})
 
+@login_required
 def checkout_view(request, listing_id):
     # Retrieve the current cart from the session
     cart = request.session.get("cart", [])
