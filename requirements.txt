@@ -9,3 +9,6 @@ webdriver-manager==4.0.2
 Pillow>=10.0.0
 django-storages[s3]==1.14.5
 django-select2==8.3.0
+django-formtools==2.5.1
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.10
