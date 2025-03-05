@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from .forms import ListingForm, PrelistForm
+from .forms import ListingForm, PrelistForm, SearchForm
 from .models import Listing
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
@@ -48,27 +48,29 @@ def listing_page(request):
         return redirect("listings:listing_page")
     
     # For GET requests, simply display listings with selected filters:
-    query = request.GET.get("q", "").strip()
-    location_filter = request.GET.get("location", "All")
-
-    # Filter listings based on search query
     listings = Listing.objects.all()
-    if query:
-        listings = listings.filter(title__icontains=query)  # Filter by title containing search term
 
-    # Apply location filter
-    if location_filter == "Global":
-        listings = listings.filter(location="Global")
-    elif location_filter == "Local":
-        listings = listings.filter(location="Local")
+    search = SearchForm(request.GET)
+    if search.is_valid():
+        query = search.cleaned_data["q"]
+        location_filter = search.cleaned_data["location"]
+
+        # Filter listings based on search query
+        if query:
+            listings = listings.filter(title__icontains=query)  # Filter by title containing search term
+
+        # Apply location filter
+        if location_filter == "Global":
+            listings = listings.filter(location="Global")
+        elif location_filter == "Local":
+            listings = listings.filter(location="Local")
 
     # Order results by newest first
     listings = listings.order_by("-id")
 
     return render(request, "listings.html", {
         "listings": listings,
-        "location_filter": location_filter,
-        "query": query  # Pass query to template for display
+        "form": search
     })
 
 # Textbook Details View
