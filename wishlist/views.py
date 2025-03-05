@@ -9,31 +9,28 @@ def request_book(request):
     if request.method == "POST":
         form = WishListForm(request.POST)
         if form.is_valid():
-            if request.user.is_authenticated:
-                wish = form.save(commit=False)
-                wish.user = request.user
-                wish.save()
-                return render(request, "wishlist/requestbook.html", {
-                    "success": True  # Display success message
-                })
+            wish = form.save(commit=False)
+            wish.user = request.user
+            wish.save()
+            return render(request, "wishlist/requestbook.html", {
+                "success": True  # Display success message
+            })
     else:
         form = WishListForm()
 
     return render(request, "wishlist/requestbook.html", {'form': form})
 
-
 # View to display the user's requests
+@login_required
 def my_requests(request):
-    if request.user.is_authenticated:
-        # Fetch requests made by the logged-in user
-        user_requests = WishList.objects.filter(user=request.user)
-    else:
-        user_requests = []
+    # Fetch requests made by the logged-in user
+    user_requests = WishList.objects.filter(user=request.user)
 
     return render(request, "wishlist/myrequests.html", {"user_requests": user_requests})
 
 
 # New view to handle editing a request
+@login_required
 def edit_request(request, request_id):
     user_request = get_object_or_404(WishList, id=request_id, user=request.user)
 
@@ -49,10 +46,12 @@ def edit_request(request, request_id):
 
 
 # New view to handle deleting a request
+@login_required
 def delete_request(request, request_id):
     user_request = get_object_or_404(WishList, id=request_id, user=request.user)
     user_request.delete()
     return redirect('wishlist:myrequests')  # Redirect to "My Requests" page after deletion
+
 
 def all_requests(request):
     # Fetch all requests from the database
