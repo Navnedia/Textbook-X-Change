@@ -60,6 +60,9 @@ class Book(models.Model):
     # subject/category tags?
     # created_by? (system, user, autofilled) or just created_manually flag.
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         indexes = [
             Index(Lower("title"), name="lower_title_idx")
