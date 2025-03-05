@@ -8,7 +8,7 @@ class PrelistSuggestionsProvider():
 
     def data_request(self, isbn):
         try:
-            response = requests.get(self.API_URL.format(isbn))
+            response = requests.get(self.API_URL.format(isbn), timeout=3)
             response.raise_for_status()
 
             return response.json()
