@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'fontawesomefree',
     "django_select2",
+    'formtools',
+    "crispy_forms",
+    "crispy_bootstrap5",
     "core",
     "listings",
     "dashboard",
@@ -48,6 +51,10 @@ INSTALLED_APPS = [
     "pricing_engine",
     "wishlist",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -153,6 +160,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST \
 
 # Select 2 Theme:
 SELECT2_THEME = "bootstrap-5"
+
+# Configure Crispy library to use bootstrap5 theme:
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
