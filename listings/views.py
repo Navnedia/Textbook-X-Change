@@ -10,8 +10,8 @@ from django.contrib.auth.decorators import login_required
 # Prelist View
 @login_required
 def prelist(request: HttpRequest) -> HttpResponse:
-    if request.POST:
-        form = PrelistForm(request.POST)
+    if request.GET:
+        form = PrelistForm(request.GET)
         if form.is_valid():
             provider = PrelistSuggestionsProvider()
             listing = provider.process_data(isbn=form.cleaned_data["isbn"])

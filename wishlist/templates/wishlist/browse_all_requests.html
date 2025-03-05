@@ -30,7 +30,7 @@
                 <span class="badge bg-info">{{ request.status }}</span><br>
 
                 <!-- Fulfill Button: Link to create listing page -->
-                <a href="{% url 'listings:create_listing' %}" class="btn btn-success btn-sm mt-2">Fulfill</a>
+                <a href="{% url 'listings:prelist' %}?isbn={{ request.isbn }}" class="btn btn-success btn-sm mt-2">Fulfill</a>
             </div>
         </div>
         {% endfor %}
