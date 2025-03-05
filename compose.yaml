@@ -32,7 +32,6 @@ services:
           - .venv
       - action: rebuild
         path: requirements.txt
-   container_name: django-textbookxchange
    ports:
      - "8000:8000"
    depends_on:
