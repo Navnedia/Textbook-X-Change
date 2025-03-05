@@ -60,16 +60,16 @@ class Listing(models.Model):
     image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
 
     class Condition(models.TextChoices):
-        NEW = "N", "New"
-        LIKE_NEW = "LN", "Like New"
-        GOOD = "G", "Good"
-        ACCEPTABLE = "A", "Acceptable"
+        NEW = "New", "New"
+        LIKE_NEW = "Like New", "Like New"
+        GOOD = "Good", "Good"
+        ACCEPTABLE = "Acceptable", "Acceptable"
 
     condition = models.CharField(max_length=20, choices=Condition, default=Condition.NEW)
 
     class Location(models.TextChoices):
-        LOCAL = "L", "Local"
-        GLOBAL = "G", "Global"
+        LOCAL = "Local", "Local"
+        GLOBAL = "Global", "Global"
 
     location=models.CharField(max_length=64, choices=Location, default=Location.LOCAL) #! this somehow needs to be a reference to the users university so that we can sort by the university for local/global.
     coursecode=models.CharField(max_length=64, null=True, blank=True)
