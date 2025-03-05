@@ -48,7 +48,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:search_results' %}">
+                    <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:listing_page' %}">
                         <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
                         <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search">
                     </form>
@@ -91,8 +91,22 @@
             </div>
         {% endif %}
 
-        
+             
+            </body>
+        </html>
 
         <div class="container">{% block content %}{% endblock content %}</div>
     </body>
+
+     <!-- Footer Section
+     <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-1">© 2025 Textbook X Change. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="{% url 'about' %}" class="text-white me-3">About Us</a>
+        
+            </p>
+        </div>
+    </footer>
 </html>
+ -->

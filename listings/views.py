@@ -46,10 +46,17 @@ def listing_page(request):
                 cart.append(listing_id)
             request.session["cart"] = cart
         return redirect("listings:listing_page")
-
+    
     # For GET requests, simply display listings with selected filters:
+    query = request.GET.get("q", "").strip()
     location_filter = request.GET.get("location", "All")
 
+    # Filter listings based on search query
+    listings = Listing.objects.all()
+    if query:
+        listings = listings.filter(title__icontains=query)  # Filter by title containing search term
+
+    # Apply location filter
     if location_filter == "Global":
         listings = Listing.objects.filter(location="Global").order_by("-id")
     elif location_filter == "Local":
@@ -57,9 +64,13 @@ def listing_page(request):
     else:
         listings = Listing.objects.all().order_by("-id")  # Default: Show all listings
 
+    # Order results by newest first
+    listings = listings.order_by("-id")
+
     return render(request, "listings.html", {
         "listings": listings,
-        "location_filter": location_filter
+        "location_filter": location_filter,
+        "query": query  # Pass query to template for display
     })
 
 # Textbook Details View
@@ -98,16 +109,3 @@ def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
     finally:
         return redirect("dashboard:dashboard")
 
-def search_results(request):
-    query = request.GET.get("q")
-    results = Listing.objects.filter(title__icontains=query) if query else []
-    if request.method == "POST":
-        listing_id = request.POST.get("listing_id")
-        if listing_id:
-            listing_id = int(listing_id)
-            cart = request.session.get("cart", [])
-            if listing_id not in cart:
-                cart.append(listing_id)
-            request.session["cart"] = cart
-    
-    return render(request, "search_results.html", {"query": query, "results": results})
