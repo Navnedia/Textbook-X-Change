@@ -40,12 +40,12 @@ class PrelistForm(forms.Form):
 class ListingForm(forms.ModelForm):
     class Meta:
         model=Listing
-        fields=["title", "isbn", "author", "description", "price", "condition", "location","coursecode", "image"]
+        fields=["title", "isbn", "author", "additional_details", "price", "condition", "location","coursecode", "image"]
         labels={
             "title":"Title",
             "isbn":"ISBN",
             "author":"Author",
-            "description":"Description",
+            "additional_details":"Additional Details",
             "price":"Price",
             "image":"Upload Image",
             "condition":"Condition",
@@ -56,7 +56,7 @@ class ListingForm(forms.ModelForm):
             "title":forms.TextInput(attrs={"class":"form-control"}),
             "isbn":forms.TextInput(attrs={"class":"form-control"}),
             "author":forms.TextInput(attrs={"class":"form-control"}),
-            "description":forms.Textarea(attrs={"class":"form-control"}),
+            "additional_details":forms.Textarea(attrs={"class":"form-control"}),
             "price":forms.NumberInput(attrs={"class":"form-control"}),
             "image": forms.ClearableFileInput(attrs={"class": "form-control"}), 
             "condition":forms.Select(attrs={"class":"form-control"}),
