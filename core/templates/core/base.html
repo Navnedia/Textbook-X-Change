@@ -1,100 +1,18 @@
-{% comment %}
- The base template defines common page structure and elements to be extended by 
- all other view templates. This includes things like importing CSS libraries and the shared navbar. 
-{% endcomment %}
+{% extends "core/skeleton.html" %}
 {% load static %}
+{% comment %}
+ The base template extends the skeleton template so it includes all the same page structure and styles,
+ scripts, head data, and library imports. The base template adds the navbar as a common page component.
+ {% endcomment %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Textbook X Change{% endblock title %}</title>
-        <link rel="shortcut icon" href="{% static 'assets/favicon.ico' %}">
+{% block body %}
+    {% include "core/navbar.html" %}
 
-        <!-- Include Bootstrap CSS and JS Bundle -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Select 2 Bootstrap 5 Theme -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    {% block unconstrained-content %}{% endblock unconstrained-content %}
+    <div class="container">{% block content %}{% endblock content %}</div>
 
-        <!-- Font Awesome CDN -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-        <!-- jQuery CDN -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-        <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
-        <style>
-            .bangers-font {
-                font-family: 'Bangers', cursive;
-                font-size: 4rem;
-                letter-spacing: 3px;
-                text-transform: uppercase;
-            }
-        </style>
-
-    {% block styles %}
-    {% endblock styles %}
-    </head>
-    
-    <body>
-        <!-- Navbar Header section -->
-        <nav class="navbar navbar-expand-md py-md-4 bg-body-tertiary">
-            <div class="container-fluid">
-                <a href="{% url 'index' %}" class="navbar-brand m-0 p-0" style="color:#191919;">
-                    {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="45" height="63.151" viewBox="0 0 45 63.151">
-                        <path d="M38.02 6.229c.365.373.483.626.504 1.145l.017.367.013.397.018.419q.024.564.043 1.129.022.588.046 1.175l.066 1.688q.046 1.265.104 2.53l.071 1.637.035.77q.024.534.045 1.067l.016.316c.018.532.022.891-.334 1.319-.271.206-.396.217-.738.192-.386-.095-.521-.208-.791-.494l-.241-.248-.244-.261-.488-.511-.216-.229c-.167-.19-.167-.19-.397-.166-.183.228-.183.228-.37.522l-.222.337-.233.356-.226.342c-.27.41-.27.41-.536.82l-.298.454a23 23 0 0 0-1.323 2.372l-.206.412-.428.86-.537 1.081q-.517 1.036-1.029 2.074-.307.625-.622 1.247l-.298.602-.136.265c-.428.878-.317 1.599-.145 2.535l.049.278q.081.451.166.904l.058.319a120 120 0 0 0 1.832 8.246l.202.785.136.526.068.265a250 250 0 0 0 .414 1.579l.259.994q.061.234.125.469.086.323.169.647l.098.369c.028.3.028.3-.09.491-.253.162-.482.235-.772.313l-.352.096-.383.101-.4.109q-.528.144-1.057.284l-1.867.505-.41.112a169 169 0 0 0-2.611.732l-.305.088a23 23 0 0 0-1.786.608c-.247.083-.247.083-.57.083a25 25 0 0 1-.176-1.885l-.019-.298-.04-.634-.105-1.688-.022-.35a525 525 0 0 0-.248-3.676l-.022-.309-.118-1.687-.085.199-.904 2.092-.335.775a211 211 0 0 1-1.81 4.096l-.153.334-.139.305-.122.267c-.101.202-.101.202-.209.31l.291.051.382.076.378.072c.41.145.548.295.778.661.061.321.061.321 0 .644-.451.54-1.031.874-1.624 1.242l-.319.2-.648.406q-.666.418-1.33.838l-.501.316-1.679 1.066-.297.189-1.841 1.174-.894.567q-.486.307-.966.625l-.192.125-.477.314c-.372.17-.643.174-1.048.135-.313-.238-.413-.378-.536-.751a26 26 0 0 1-.041-.883l-.009-.274-.03-.9-.022-.633-.044-1.334-.045-1.35a480 480 0 0 1-.139-4.67q-.02-.815-.03-1.632l-.009-.396-.003-.356-.004-.305c.067-.35.204-.476.481-.694.382-.081.622-.083.958.131.523.441.971.959 1.417 1.476.184.224.184.224.415.324l.091-.238c.113-.274.238-.528.382-.788l.154-.283.166-.302.174-.317a116 116 0 0 1 1.169-2.073 117 117 0 0 0 1.791-3.257q.352-.658.715-1.31a44 44 0 0 0 1.769-3.551c.262-.589.545-1.163.839-1.736.413-.796.413-.796.457-1.673l-.036-.343a43 43 0 0 0-.238-1.633l-.058-.361-.189-1.152-.066-.4a140 140 0 0 0-1.21-6.467l-.112-.53-.058-.276-.118-.559-.284-1.334a39 39 0 0 1-.5-2.779l3.46-1.435q.931-.386 1.86-.775l1.156-.482.553-.232q.385-.162.77-.32l.23-.098c.526-.216.526-.216.886-.095l.044.401.413 3.74.212 1.924.204 1.855.077.708.109.99.032.298.031.272.026.237c.03.229.03.229.139.527l.103-.229a854 854 0 0 1 2.272-5.044l.298-.657.172-.379a32 32 0 0 1 .483-.993l-.315.02a3.15 3.15 0 0 1-1.403-.342c-.269-.403-.272-.598-.215-1.075.469-.585 1.13-.936 1.759-1.328l.543-.343.372-.234q.922-.586 1.838-1.188l.612-.4.292-.192q.94-.613 1.885-1.222l.907-.59.683-.44a49 49 0 0 0 .923-.609l.455-.301.208-.144c.482-.313.787-.385 1.336-.204" fill="currentColor"/>
-                    </svg> {% endcomment %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="70.168" viewBox="0 0 50 70.168"><path d="M42.244 6.921c.406.414.537.696.56 1.272l.019.408.014.441.02.466q.027.627.048 1.254.024.653.051 1.306l.073 1.876q.051 1.406.116 2.811l.079 1.819.039.856q.027.593.05 1.186l.018.351c.02.591.024.99-.371 1.466-.301.229-.44.241-.82.213-.429-.106-.579-.231-.879-.549l-.268-.276-.271-.29-.542-.568-.24-.254c-.186-.211-.186-.211-.441-.184-.203.253-.203.253-.411.58l-.247.374-.259.396-.251.38c-.3.456-.3.456-.596.911l-.331.504a26 26 0 0 0-1.47 2.636l-.229.458-.476.956-.597 1.201q-.574 1.151-1.143 2.304-.341.694-.691 1.386l-.331.669-.151.294c-.476.976-.352 1.777-.161 2.817l.054.309q.09.501.184 1.004l.064.354a133 133 0 0 0 2.036 9.162l.224.872.151.584.076.294a278 278 0 0 0 .46 1.754l.288 1.104q.068.26.139.521.096.359.188.719l.109.41c.031.333.031.333-.1.546-.281.18-.536.261-.858.348l-.391.107-.426.112-.444.121q-.587.16-1.174.316l-2.074.561-.456.124a188 188 0 0 0-2.901.813l-.339.098a26 26 0 0 0-1.984.676c-.274.092-.274.092-.633.092a28 28 0 0 1-.196-2.094l-.021-.331-.044-.704-.117-1.876-.024-.389a583 583 0 0 0-.276-4.084l-.024-.343-.131-1.874-.094.221-1.004 2.324-.372.861a234 234 0 0 1-2.011 4.551l-.17.371-.154.339-.136.297c-.112.224-.112.224-.232.344l.323.057.424.084.42.08c.456.161.609.328.864.734.068.357.068.357 0 .716-.501.6-1.146.971-1.804 1.38l-.354.222-.72.451q-.74.464-1.478.931l-.557.351-1.866 1.184-.33.21-2.046 1.304-.993.63q-.54.341-1.073.694l-.213.139-.53.349c-.413.189-.714.193-1.164.15-.348-.264-.459-.42-.596-.834a29 29 0 0 1-.046-.981l-.01-.304-.033-1-.024-.703-.049-1.482-.05-1.5a533 533 0 0 1-.154-5.189q-.022-.906-.033-1.813l-.01-.44-.003-.396-.004-.339c.074-.389.227-.529.534-.771.424-.09.691-.092 1.064.146.581.49 1.079 1.066 1.574 1.64.204.249.204.249.461.36l.101-.264c.126-.304.264-.587.424-.876l.171-.314.184-.336.193-.352a129 129 0 0 1 1.299-2.303 130 130 0 0 0 1.99-3.619q.391-.731.794-1.456a49 49 0 0 0 1.966-3.946c.291-.654.606-1.292.932-1.929.459-.884.459-.884.508-1.859l-.04-.381a48 48 0 0 0-.264-1.814l-.064-.401-.21-1.28-.073-.444a156 156 0 0 0-1.344-7.186l-.124-.589-.064-.307-.131-.621-.316-1.482a43 43 0 0 1-.556-3.088l3.844-1.594q1.034-.429 2.067-.861l1.284-.536.614-.258q.428-.18.856-.356l.256-.109c.584-.24.584-.24.984-.106l.049.446.459 4.156.236 2.138.227 2.061.086.787.121 1.1.036.331.034.302.029.263c.033.254.033.254.154.586l.114-.254a949 949 0 0 1 2.524-5.604l.331-.73.191-.421a36 36 0 0 1 .537-1.103l-.35.022a3.5 3.5 0 0 1-1.559-.38c-.299-.448-.302-.664-.239-1.194.521-.65 1.256-1.04 1.954-1.476l.603-.381.413-.26q1.024-.651 2.042-1.32l.68-.444.324-.213q1.044-.681 2.094-1.358l1.008-.656.759-.489a54 54 0 0 0 1.026-.677l.506-.334.231-.16c.536-.348.874-.428 1.484-.227" fill="#191919"/></svg>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:listing_page' %}">
-                        <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
-                        <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search">
-                    </form>
-
-                    <div class="navbar-nav">
-                        <a href="{% url 'index' %}" class="nav-link">Home</a>
-                        <a href="{% url 'about' %}" class="nav-link">About</a>
-                        <a href="{% url 'listings:listing_page' %}" class="nav-link">Browse</a>
-                        <a href="{% url 'wishlist:all_requests' %}" class="nav-link">Requests</a>
-                        <a href="{% url 'listings:prelist' %}" class="nav-link">Sell</a>
-                        <a href="{% url 'cart:cart' %}" class="nav-link">
-                            <i class="fa fa-cart-shopping"></i>
-                        </a>
-                    
-                        {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard:dashboard' %}" class="nav-link">
-                            <i class="fa fa-user"></i>
-                        </a>
-                        <span class="nav-link" >{{ user.email }}</span>
-                        
-                        <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">Logout</button>
-                        </form>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="btn btn-outline-primary">Login</a>
-                        {% endif %}
-                    </div>
-                    
-                    
-                </div>
-            </div>
-        </nav>
-
-        <div class="container">{% block content %}{% endblock content %}</div>
-        {% block unconstrained-content %}{% endblock unconstrained-content %}
-    </body>
-
-     <!-- Footer Section
-     <footer class="bg-dark text-white py-3 mt-5">
+    {% comment %} <footer class="bg-dark text-white py-3 mt-5">
         <div class="container text-center">
             <p class="mb-1">© 2025 Textbook X Change. All rights reserved.</p>
             <p class="mb-0">
@@ -102,6 +20,5 @@
         
             </p>
         </div>
-    </footer>
-</html>
- -->
+    </footer> {% endcomment %}
+{% endblock %}
