@@ -68,9 +68,9 @@ def browse_search(request):
     # Order results by newest first
     listings = listings.order_by("-id")
 
-    return render(request, "listings.html", {
+    return render(request, "browse.html", {
         "listings": listings,
-        "form": search
+        "search_form": search
     })
 
 # Textbook Details View

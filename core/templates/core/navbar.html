@@ -17,15 +17,17 @@ on will have access to all the bootstrap styles and other libraries imported in 
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:listing_page' %}">
+            <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:browse_search' %}">
                 <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
-                <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search">
+                <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search"
+                    value="{% if search_form.q %}{{ search_form.q.value }}{% endif %}">
+                    {% comment %} Query stays in the search bar. {% endcomment %}
             </form>
 
             <div class="navbar-nav">
                 <a href="{% url 'index' %}" class="nav-link">Home</a>
                 <a href="{% url 'about' %}" class="nav-link">About</a>
-                <a href="{% url 'listings:listing_page' %}" class="nav-link">Browse</a>
+                <a href="{% url 'listings:browse_search' %}" class="nav-link">Browse</a>
                 <a href="{% url 'wishlist:all_requests' %}" class="nav-link">Requests</a>
                 <a href="{% url 'listings:prelist' %}" class="nav-link">Sell</a>
                 <a href="{% url 'cart:cart' %}" class="nav-link">
