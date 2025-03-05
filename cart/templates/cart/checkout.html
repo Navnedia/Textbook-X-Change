@@ -1,65 +1,115 @@
 {% extends "core/base.html" %}
 {% block title %}Checkout | Textbook X Change{% endblock %}
 
+{% block styles %}
+    <style>
+        .form-control::placeholder { 
+            font-style: italic;
+            color: #aaa;
+        }
+    </style>
+{% endblock styles %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Checkout</h2>
+    <h2 class="text-center mb-4 bangers-font">Checkout</h2>
     <div class="row">
         <!-- Book Details -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h3>Book Details</h3>
             <div class="card shadow-sm mb-3">
                 {% if listing.image %}
-                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="height: 250px; object-fit: cover;">
                 {% else %}
-                    <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
+                    <div class="card-img-top bg-light text-center text-muted" style="height: 250px; line-height: 250px;">No Image</div>
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
                     <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
-                    <p class="card-text"><strong>Price:</strong> ${{ listing.price }}</p>
+                    <p class="card-text"><strong>Price:</strong> <span class="text-success fw-bold">${{ listing.price }}</span></p>
                     <p class="card-text"><strong>ISBN:</strong> {{ listing.isbn }}</p>
                 </div>
             </div>
         </div>
+
         <!-- Shipping & Payment Form -->
-        <div class="col-md-6">
+        <div class="col-md-7">
             <h3>Shipping & Payment</h3>
             <form method="post" action="">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label for="shipping_address" class="form-label">Shipping Address</label>
-                    <input type="text" class="form-control" id="shipping_address" name="shipping_address" required>
+                
+                <!-- Shipping Address -->
+                <div class="card shadow-sm p-3 mb-3">
+                    <h5 class="fw-bold">Shipping Address</h5>
+                    <div class="mb-3">
+                        <label for="shipping_address" class="form-label">Street Address</label>
+                        <input type="text" class="form-control" id="shipping_address" name="shipping_address" placeholder="123 Main St" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" placeholder="Bari" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" placeholder="IT" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="zip_code" class="form-label">Zip Code</label>
+                            <input type="text" class="form-control" id="zip_code" name="zip_code" placeholder="70019" required>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="city" class="form-label">City</label>
-                    <input type="text" class="form-control" id="city" name="city" required>
+
+                <!-- Payment Information -->
+                <div class="card shadow-sm p-3 mb-3">
+                    <h5 class="fw-bold">Payment Information</h5>
+                    <div class="secure-payment">
+                        <i class="fa fa-lock"></i> Secure Payment
+                    </div>
+                    <div class="mb-3">
+                        <label for="cc_number" class="form-label">Credit Card Number</label>
+                        <input type="text" class="form-control" id="cc_number" name="cc_number" placeholder="4815 1623 4248 1516" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="cc_expiration" class="form-label">Expiration Date</label>
+                            <input type="text" class="form-control" id="cc_expiration" name="cc_expiration" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cc_cvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="cc_cvv" name="cc_cvv" placeholder="123" required>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="state" class="form-label">State</label>
-                    <input type="text" class="form-control" id="state" name="state" required>
-                </div>
-                <div class="mb-3">
-                    <label for="zip_code" class="form-label">Zip Code</label>
-                    <input type="text" class="form-control" id="zip_code" name="zip_code" required>
-                </div>
-                <hr>
-                <h4>Payment Information</h4>
-                <div class="mb-3">
-                    <label for="cc_number" class="form-label">Credit Card Number</label>
-                    <input type="text" class="form-control" id="cc_number" name="cc_number" required>
-                </div>
-                <div class="mb-3">
-                    <label for="cc_expiration" class="form-label">Expiration Date</label>
-                    <input type="text" class="form-control" id="cc_expiration" name="cc_expiration" placeholder="MM/YY" required>
-                </div>
-                <div class="mb-3">
-                    <label for="cc_cvv" class="form-label">CVV</label>
-                    <input type="text" class="form-control" id="cc_cvv" name="cc_cvv" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Purchase</button>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100 fw-bold">Complete Purchase</button>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Input Mask Script, GPT for this-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // CC Input Mask
+        document.getElementById("cc_number").addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "").substring(0, 16);
+            e.target.value = value.replace(/(\d{4})/g, "$1 ").trim();
+        });
+
+        // Exp Date Input Mask
+        document.getElementById("cc_expiration").addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "").substring(0, 4);
+            e.target.value = value.replace(/(\d{2})/, "$1/").trim();
+        });
+
+        // CVV Input Mask
+        document.getElementById("cc_cvv").addEventListener("input", function (e) {
+            e.target.value = e.target.value.replace(/\D/g, "").substring(0, 3);
+        });
+
+    });
+</script>
 {% endblock %}
