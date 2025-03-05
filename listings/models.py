@@ -36,6 +36,9 @@ class Listing(models.Model):
     allows_local_pickup = models.BooleanField(default=False)
     allows_shipping = models.BooleanField(default=False)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     # coursecode=models.CharField(max_length=64, null=True, blank=True)
 
     # @property # Is this technically a property, I don't think so...
