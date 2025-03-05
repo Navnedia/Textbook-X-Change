@@ -58,7 +58,7 @@ class Listing(models.Model):
     additional_details=models.TextField(null=True, blank=True) #! listing additional details?
     price=models.DecimalField(max_digits=10, decimal_places=2)
     image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
-
+    sold=models.BooleanField(default=False)
     class Condition(models.TextChoices):
         NEW = "New", "New"
         LIKE_NEW = "Like New", "Like New"
