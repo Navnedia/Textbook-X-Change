@@ -48,7 +48,7 @@ def browse_search(request):
         return redirect("listings:browse_search")
     
     # For GET requests, simply display listings with selected filters:
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(sold=False)
 
     search = SearchForm(request.GET)
     if search.is_valid():
