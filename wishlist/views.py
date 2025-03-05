@@ -3,20 +3,6 @@ from .models import WishList
 from django.contrib.auth.decorators import login_required
 from .forms import WishListForm
 
-# Create your views here.
-def create_wish(request):
-    if request.method == "POST":
-        form = WishListForm(request.POST)
-        if form.is_valid():
-            if request.user.is_authenticated:
-                wish = form.save(commit=False)
-                wish.user = request.user
-                wish.save()
-                return redirect('wishlist:myrequests')  # Redirect to My Requests after saving
-    else:
-        form = WishListForm()
-
-    return render(request, 'wishlist/createwish.html', {'form': form})
 
 @login_required
 def request_book(request):
