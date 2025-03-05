@@ -35,7 +35,7 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
     return render(request, "create_listing.html", {"form": form})
 
 # Listing Page with Filtering
-def listing_page(request):
+def browse_search(request):
     # Adding an item to the cart via POST
     if request.method == "POST":
         listing_id = request.POST.get("listing_id")
@@ -45,7 +45,7 @@ def listing_page(request):
             if listing_id not in cart:
                 cart.append(listing_id)
             request.session["cart"] = cart
-        return redirect("listings:listing_page")
+        return redirect("listings:browse_search")
     
     # For GET requests, simply display listings with selected filters:
     listings = Listing.objects.all()

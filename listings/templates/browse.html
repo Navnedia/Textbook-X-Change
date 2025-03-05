@@ -40,11 +40,11 @@
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <h5 class="fw-bold">Filter by Location</h5>
-                <form method="GET" action="{% url 'listings:listing_page' %}">
-                    {{ form.q }}
+                <form method="GET" action="{% url 'listings:browse_search' %}">
+                    {{ search_form.q }}
 
                     {% comment %} Display location filtering options {% endcomment %}
-                    {% for location in form.location %}
+                    {% for location in search_form.location %}
                         <div class="form-check">
                             {% comment %} 
                                 For whatever reason I couldn't get the default value 
