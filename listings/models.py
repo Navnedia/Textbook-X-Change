@@ -22,7 +22,7 @@ class Listing(models.Model):
         GOOD = "Good", "Good"
         ACCEPTABLE = "Acceptable", "Acceptable"
 
-    condition = models.CharField(max_length=3, choices=Condition, default=Condition.NEW)
+    condition = models.CharField(max_length=20, choices=Condition, default=Condition.NEW)
 
     class Location(models.TextChoices):
         LOCAL = "Local", "Local"
