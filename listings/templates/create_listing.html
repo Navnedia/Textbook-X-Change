@@ -55,9 +55,18 @@
     {% endif %}
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    {{ form.description }}
-                    {{ form.description.errors|striptags }}
+                    <label for="coursecode">Course Code</label>
+                    {{ form.coursecode }}
+                    {% if form.coursecode.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.coursecode.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="additional_details">Description</label>
+                    {{ form.additional_details }}
+                    {{ form.additional_details.errors|striptags }}
                 </div>
 
                 <div class="text-end">
@@ -134,7 +143,8 @@
                         <li class="list-group-item"><strong>Author:</strong> <span id="confirm-author"></span></li>
                         <li class="list-group-item"><strong>Condition:</strong> <span id="confirm-condition"></span></li>
                         <li class="list-group-item"><strong>Location:</strong> <span id="confirm-location"></span></li>
-                        <li class="list-group-item"><strong>Description:</strong> <span id="confirm-description"></span></li>
+                        <li class="list-group-item"><strong>Course Code:</strong> <span id="confirm-coursecode"></span></li>
+                        <li class="list-group-item"><strong>Description:</strong> <span id="confirm-additional_details"></span></li>
                         <li class="list-group-item"><strong>Your Price:</strong> <span id="confirm-price"></span></li>
                     </ul>
                     <button type="button" id="back-to-step-3" class="btn btn-secondary mt-4">Back</button>
@@ -205,7 +215,8 @@ document.addEventListener("DOMContentLoaded", function() {
           document.getElementById("confirm-author").textContent = document.getElementById("id_author").value;
           document.getElementById("confirm-condition").textContent = document.getElementById("id_condition").value;
           document.getElementById("confirm-location").textContent = document.getElementById("id_location").value;
-          document.getElementById("confirm-description").textContent = document.getElementById("id_description").value;
+          document.getElementById("confirm-coursecode").textContent = document.getElementById("id_coursecode").value;
+          document.getElementById("confirm-additional_details").textContent = document.getElementById("id_additional_details").value;
           document.getElementById("confirm-price").textContent = "$" + (document.getElementById("id_price").value || "N/A");
     });
 
