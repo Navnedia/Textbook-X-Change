@@ -21,9 +21,10 @@ def prelist(request: HttpRequest) -> HttpResponse:
     return render(request, "prelist.html", {"form": PrelistForm()})
 
 # Create Listing View
+@login_required
 def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
     if not autofill_data and request.method == "POST":
-        form = ListingForm(request.POST, request.FILES)    
+        form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))    
         if form.is_valid():
             form.save()
             return redirect("dashboard:dashboard") 
@@ -89,9 +90,10 @@ def textbook_details(request, pk):
 
     return render(request, "textbook_details.html", {"listing": listing})
 
-
+@login_required
 def edit_listing(request, listing_id):
-    listing = Listing.objects.get(pk=listing_id)
+    listing = Listing.objects.get_object_or_404(pk=listing_id, seller=request.user)
+
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES, instance=listing)
         if form.is_valid():
@@ -104,7 +106,7 @@ def edit_listing(request, listing_id):
 @login_required
 def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
     try:
-        listing = Listing.objects.get(pk=listing_id)
+        listing = Listing.objects.get(pk=listing_id, seller=request.user)
         listing.delete()
     finally:
         return redirect("dashboard:dashboard")
