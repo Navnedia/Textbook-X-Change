@@ -11,5 +11,6 @@ class WishListForm(forms.ModelForm):
             'isbn': forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}),
         }
 
+    # Aiden: For now, I want the ISBN reqired because it will make doing the fulfill autofill simpler.
     # Make ISBN optional
-    isbn = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}))
+    # isbn = forms.CharField(required=False, strip=True, widget=forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}))
