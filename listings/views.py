@@ -58,11 +58,9 @@ def listing_page(request):
 
     # Apply location filter
     if location_filter == "Global":
-        listings = Listing.objects.filter(location="Global").order_by("-id")
+        listings = listings.filter(location="Global")
     elif location_filter == "Local":
-        listings = Listing.objects.filter(location="Local").order_by("-id")
-    else:
-        listings = Listing.objects.all().order_by("-id")  # Default: Show all listings
+        listings = listings.filter(location="Local")
 
     # Order results by newest first
     listings = listings.order_by("-id")

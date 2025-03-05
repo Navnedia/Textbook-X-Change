@@ -56,6 +56,8 @@
                             {% if location_filter == "Local" %}checked{% endif %}>
                         <label class="form-check-label" for="local">Local</label>
                     </div>
+
+                    <input class="form-control" type="search" name="q" value="{{ query }}" hidden>
                     <button type="submit" class="btn btn-primary btn-sm mt-3">Apply Filter</button>
                 </form>
 
