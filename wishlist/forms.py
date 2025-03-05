@@ -1,4 +1,3 @@
-#Use django forms
 from django import forms
 from .models import WishList
 
@@ -11,3 +10,6 @@ class WishListForm(forms.ModelForm):
             'author': forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}),
             'isbn': forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}),
         }
+
+    # Make ISBN optional
+    isbn = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control text-center fw-bold'}))

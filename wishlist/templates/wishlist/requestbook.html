@@ -4,16 +4,14 @@
 
 {% block content %}
 <div class="container mt-5">
-    <!-- Breadcrumb Navigation -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'listings:listing_page' %}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Request</li>
-        </ol>
-    </nav>
+    <!-- Removed Breadcrumb Navigation -->
+    <h1 class="text-center mb-4 bangers-font">REQUEST A TEXTBOOK</h1>  <!-- Used title-large class for consistent font size -->
 
-    <!-- Page Title -->
-    <h1 class="text-center bangers-font title-large mb-4">REQUEST A TEXTBOOK</h1>
+    <!-- Buttons under the title -->
+    <div class="d-flex justify-content-center mb-4">
+        <a href="{% url 'wishlist:all_requests' %}" class="btn btn-dark btn-lg me-3">Browse All Requests</a> <!-- All Requests button -->
+        <a href="{% url 'wishlist:myrequests' %}" class="btn btn-dark btn-lg">My Requests</a> <!-- My Requests button -->
+    </div>
 
     <!-- Request Form -->
     <div class="card shadow-lg p-4 custom-grey-box">
@@ -21,9 +19,12 @@
             {% csrf_token %}
             {{ form.as_p }}
 
+            <!-- Conditionally hide the submit button after success -->
+            {% if not success %}
             <div class="text-center">
                 <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
             </div>
+            {% endif %}
         </form>
 
         <!-- Display success message only after form submission -->
@@ -31,7 +32,8 @@
         <p class="text-center text-success mt-3 fw-bold">Success! We will email you once your requested textbook is available</p>
 
         <div class="text-center mt-3">
-            <a href="{% url 'wishlist:myrequests' %}" class="btn btn-primary btn-lg">Go to My Requests</a>
+            <a href="{% url 'wishlist:myrequests' %}" class="btn btn-dark btn-lg mx-2">Go to My Requests</a>  <!-- Same color for both buttons -->
+            <a href="{% url 'wishlist:all_requests' %}" class="btn btn-dark btn-lg mx-2">Browse All Requests</a>  <!-- Same color for both buttons -->
         </div>
         {% endif %}
     </div>
@@ -43,6 +45,7 @@
         font-family: 'Bangers', cursive;
     }
 
+    /* Consistent font size for both titles */
     .title-large {
         font-size: 2.5rem;
         letter-spacing: 1px;
@@ -54,7 +57,19 @@
     }
 
     .btn-lg {
-        width: 100%;
+        width: auto; /* Remove full width */
+    }
+
+    /* Space between buttons */
+    .mx-2 {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    /* Button hover effect: lighter shade */
+    .btn-dark:hover {
+        background-color: #555; /* Darker shade on hover */
+        border-color: #444;
     }
 </style>
 

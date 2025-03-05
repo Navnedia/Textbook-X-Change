@@ -1,20 +1,20 @@
 {% extends "core/base.html" %}
 
-{% block title %}My Requests{% endblock %}
+{% block title %}Browse All Requests{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4 bangers-font">My Requests</h1>  <!-- Only title has the custom font -->
+    <h1 class="text-center mb-4 bangers-font">All Textbook Requests</h1>  <!-- Only title has the custom font -->
 
     <!-- Buttons under the title -->
     <div class="d-flex justify-content-center mb-4">
         <a href="{% url 'wishlist:requestBook' %}" class="btn btn-dark btn-lg me-3">Create Request</a> <!-- Create request button -->
-        <a href="{% url 'wishlist:all_requests' %}" class="btn btn-dark btn-lg">Browse All Requests</a> <!-- Browse button -->
+        <a href="{% url 'wishlist:myrequests' %}" class="btn btn-dark btn-lg">My Requests</a> <!-- My requests button -->
     </div>
 
-    {% if user_requests %}
+    {% if requests %}
     <div class="list-group">
-        {% for request in user_requests %}
+        {% for request in requests %}
         <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
 
             <!-- Left: Book Details (Title, Author, and ISBN) -->
@@ -24,20 +24,19 @@
                 <small class="text-muted">ISBN: {{ request.isbn }}</small>
             </div>
 
-            <!-- Right: Actions (Button or any other links you want to add) -->
+            <!-- Right: User Information and Status -->
             <div class="text-end">
-                <a href="{% url 'wishlist:edit_request' request.id %}" class="btn btn-lg ">
-                    <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
-                </a>
-                <a href="{% url 'wishlist:delete_request' request.id %}" class="btn btn-lg ">
-                    <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
-                </a>
+                <small class="text-muted">Requested by: {{ request.user.username }}</small><br>
+                <span class="badge bg-info">{{ request.status }}</span><br>
+
+                <!-- Fulfill Button: Link to create listing page -->
+                <a href="{% url 'listings:create_listing' %}" class="btn btn-success btn-sm mt-2">Fulfill</a>
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <p class="text-center">You haven't made any requests yet.</p>
+    <p class="text-center">No requests found.</p>
     {% endif %}
 </div>
 {% endblock %}
