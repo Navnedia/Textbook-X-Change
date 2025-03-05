@@ -2,6 +2,28 @@ from django import forms
 from .models import Listing
 
 
+LOCATION_FILTER_CHOICES = {
+    "All": "All",
+    "Local": "Local",
+    "Global": "Global"
+}
+
+class SearchForm(forms.Form):
+    # Search query visually hidden but included so that filters narrow down the existing search:
+    q = forms.CharField(
+        required=False,
+        strip=True,
+        widget=forms.HiddenInput()
+    )
+
+    location = forms.ChoiceField(
+        required=False,
+        choices=LOCATION_FILTER_CHOICES,
+        widget=forms.RadioSelect(attrs={"class": "form-check-input"}),
+    )
+
+
+
 class PrelistForm(forms.Form):
     # For now, the form will only accept an ISBN number, but we might allow 
     # it to accept details like the title or author in the future.
