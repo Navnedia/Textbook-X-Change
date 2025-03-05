@@ -40,6 +40,9 @@ def checkout_view(request, listing_id):
         #cc_expiration = request.POST.get("cc_expiration")
         #cc_cvv = request.POST.get("cc_cvv")
         # Remove the listing from the session cart
+        listing.sold = True
+        listing.save()
+        
         cart.remove(listing_id)
         request.session["cart"] = cart
         # Add a success message 
