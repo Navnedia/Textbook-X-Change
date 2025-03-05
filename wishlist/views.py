@@ -66,3 +66,8 @@ def delete_request(request, request_id):
     user_request = get_object_or_404(WishList, id=request_id, user=request.user)
     user_request.delete()
     return redirect('wishlist:myrequests')  # Redirect to "My Requests" page after deletion
+
+def all_requests(request):
+    # Fetch all requests from the database
+    requests = WishList.objects.all()
+    return render(request, 'wishlist/browse_all_requests.html', {'requests': requests})
