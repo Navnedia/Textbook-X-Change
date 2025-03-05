@@ -36,9 +36,15 @@ on will have access to all the bootstrap styles and other libraries imported in 
             
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard:dashboard' %}" class="nav-link">
-                    <i class="fa fa-user"></i>
+                    <i class="fa fa-user position-relative">
+                        {% if has_sold %}
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                <span class="visually-hidden">New alerts - sold items</span>
+                            </span>
+                        {% endif %}
+                    </i>
                 </a>
-                <span class="nav-link" >{{ user.email }}</span>
+                <span class="nav-link">{{ user.email }}</span>
                 
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}

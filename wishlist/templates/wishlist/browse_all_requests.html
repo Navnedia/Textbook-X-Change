@@ -30,7 +30,11 @@
                 <span class="badge bg-info">{{ request.status }}</span><br>
 
                 <!-- Fulfill Button: Link to create listing page -->
-                <a href="{% url 'listings:prelist' %}?isbn={{ request.isbn }}" class="btn btn-success btn-sm mt-2">Fulfill</a>
+                {% if request.user == user %}
+                    <a href="{% url 'wishlist:edit_request' request.id %}" class="btn btn-success btn-sm mt-2">Edit</a>
+                {% else %}
+                    <a href="{% url 'listings:prelist' %}?isbn={{ request.isbn }}" class="btn btn-success btn-sm mt-2">Fulfill</a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

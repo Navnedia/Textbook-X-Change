@@ -34,12 +34,16 @@
 
             <!-- Right: Actions & Price -->
             <div class="text-end">
-                <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
-                    <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
-                </a>
-                <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
-                    <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
-                </a>
+                {% if listing.sold  %}
+                    <h5><span class="badge text-bg-success">Sold</span></h5>
+                {% else %}
+                    <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
+                        <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
+                    </a>
+                    <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
+                        <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
+                    </a>
+                {% endif %}
                 <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
             </div>
             

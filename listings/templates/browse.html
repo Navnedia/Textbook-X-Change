@@ -99,7 +99,7 @@
                                 <form method="post" action="">
                                     {% csrf_token %}
                                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    <button type="submit" class="btn add-to-cart btn-success z-1">
+                                    <button type="submit" class="btn add-to-cart btn-success z-1" {% if listing.seller == user %}disabled{% endif %}>
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </form>
