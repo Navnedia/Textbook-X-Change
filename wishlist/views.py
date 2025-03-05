@@ -1,12 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import WishList
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def create_wish(request):
     return render(request, 'wishlist/createwish.html')
 
-
+@login_required
 def request_book(request):
     if request.method == "POST":
         book_title = request.POST.get("book_title")
