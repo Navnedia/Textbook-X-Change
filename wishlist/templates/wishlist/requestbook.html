@@ -16,25 +16,18 @@
     <h1 class="text-center bangers-font title-large mb-4">REQUEST A TEXTBOOK</h1>
 
     <!-- Request Form -->
-    <div class="card shadow-lg p-4 bg-light">
+    <div class="card shadow-lg p-4 custom-grey-box">
         <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <input type="text" class="form-control text-center fw-bold" placeholder="Book Title (required)" name="book_title" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control text-center fw-bold" placeholder="Author (required)" name="author" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control text-center fw-bold" placeholder="ISBN (optional)" name="isbn">
-            </div>
+            {{ form.as_p }}
+
             <div class="text-center">
-                <button type="submit" class="btn btn-dark btn-lg">Submit!</button>
+                <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
             </div>
         </form>
 
         <!-- Display success message only after form submission -->
-        {% if request.method == "POST" %}
+        {% if success %}
         <p class="text-center text-success mt-3 fw-bold">Success! We will email you once your requested textbook is available</p>
 
         <div class="text-center mt-3">
@@ -67,5 +60,4 @@
 
 <!-- Include Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
-
 {% endblock %}
