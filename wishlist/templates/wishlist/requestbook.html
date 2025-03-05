@@ -29,12 +29,7 @@
 
         <!-- Display success message only after form submission -->
         {% if success %}
-        <p class="text-center text-success mt-3 fw-bold">Success! We will email you once your requested textbook is available</p>
-
-        <div class="text-center mt-3">
-            <a href="{% url 'wishlist:myrequests' %}" class="btn btn-dark btn-lg mx-2">Go to My Requests</a>  <!-- Same color for both buttons -->
-            <a href="{% url 'wishlist:all_requests' %}" class="btn btn-dark btn-lg mx-2">Browse All Requests</a>  <!-- Same color for both buttons -->
-        </div>
+            <p class="text-center text-success mt-3 fw-bold h5">Success! We will email you once your requested textbook is available</p>
         {% endif %}
     </div>
 </div>
