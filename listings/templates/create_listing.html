@@ -150,6 +150,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const progressBar = document.getElementById("progress-bar");
     const isbnField = document.getElementById("id_isbn");
+    // Fetch eBay Prices on Step 3 Load
+    fetchSuggestedPrice(isbnField.value.trim());
 
     const step1 = document.getElementById("step-1");
     const step2 = document.getElementById("step-2");
@@ -182,9 +184,6 @@ document.addEventListener("DOMContentLoaded", function() {
         step3.style.display = "block";
         progressBar.style.width = "75%";
         progressBar.textContent = "Step 3 of 4";
-
-        // Fetch eBay Prices on Step 3 Load
-        fetchSuggestedPrice(isbnField.value.trim());
     });
 
     backToStep2.addEventListener("click", function() {
