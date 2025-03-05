@@ -59,10 +59,15 @@
                     <button type="submit" class="btn btn-primary btn-sm mt-3">Apply Filter</button>
                 </form>
 
-                <!-- Request a Textbook Button (Placeholder) -->
-                <button class="btn btn-secondary mt-4 w-100" onclick="alert('Request Textbook functionality coming soon!')">
+                <!-- Request a Textbook Button -->
+                <a href="{% url 'wishlist:requestBook' %}" class="btn btn-secondary mt-4 w-100">
                     Request a Textbook
-                </button>
+                </a>
+
+                <!-- View Requested Books Button -->
+                <a class="btn btn-secondary mt-4 w-100">
+                    View Requested Books
+                </a>
             </div>
         </div>
 
