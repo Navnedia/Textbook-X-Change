@@ -92,7 +92,7 @@ def textbook_details(request, pk):
 
 @login_required
 def edit_listing(request, listing_id):
-    listing = Listing.objects.get_object_or_404(pk=listing_id, seller=request.user)
+    listing = Listing.objects.get(pk=listing_id, seller=request.user)
 
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES, instance=listing)
