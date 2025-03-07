@@ -20,7 +20,7 @@ on will have access to all the bootstrap styles and other libraries imported in 
             <form class="input-group px-4" role="search" method="GET" action="{% url 'listings:browse_search' %}">
                 <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
                 <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search"
-                    value="{% if search_form.q %}{{ search_form.q.value }}{% endif %}">
+                    value="{% if search_form.q and search_form.q.value %}{{ search_form.q.value }}{% endif %}">
                     {% comment %} Query stays in the search bar. {% endcomment %}
             </form>
 

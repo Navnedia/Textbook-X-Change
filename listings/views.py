@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from .forms import ListingForm, PrelistForm, SearchForm
 from .models import Listing
+from django.db.models import Q
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
 
@@ -49,16 +50,20 @@ def browse_search(request):
         return redirect("listings:browse_search")
     
     # For GET requests, simply display listings with selected filters:
-    listings = Listing.objects.filter(sold=False)
+    listings = Listing.objects.filter(sold=False) # Filter to only unsold listings.
 
     search = SearchForm(request.GET)
     if search.is_valid():
-        query = search.cleaned_data["q"]
+         # I stripped out the dash for matching ISBN, but maybe we should regex check that it is an ISBN first.
+         # If we know it's an ISBN we can also simply the query filter to only match ISBN.
+        query = search.cleaned_data["q"].replace("-", "")
         location_filter = search.cleaned_data["location"]
 
         # Filter listings based on search query
         if query:
-            listings = listings.filter(title__icontains=query)  # Filter by title containing search term
+            listings = listings.filter(
+                Q(title__icontains=query) | Q(author__icontains=query) | Q(isbn__exact=query)
+            )  # Filter by title, author, and ISBN containing the search term
 
         # Apply location filter
         if location_filter == "Global":
@@ -67,7 +72,7 @@ def browse_search(request):
             listings = listings.filter(location="Local")
 
     # Order results by newest first
-    listings = listings.order_by("-id")
+    listings = listings.order_by("-id").distinct()
 
     return render(request, "browse.html", {
         "listings": listings,
