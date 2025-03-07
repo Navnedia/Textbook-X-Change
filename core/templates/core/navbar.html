@@ -37,9 +37,9 @@ on will have access to all the bootstrap styles and other libraries imported in 
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard:dashboard' %}" class="nav-link">
                     <i class="fa fa-user position-relative">
-                        {% if has_sold %}
+                        {% if dashboard_notification %}
                             <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                <span class="visually-hidden">New alerts - sold items</span>
+                                <span class="visually-hidden">New dashboard Notification</span>
                             </span>
                         {% endif %}
                     </i>
