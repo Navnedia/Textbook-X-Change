@@ -12,6 +12,18 @@ class RegistrationView(SuccessMessageMixin, CreateView):
     success_url = "/login/"
     success_message = "Account created successfully! You can now log in."
 
+    def get(self, request, *args, **kwargs):
+        next = request.GET.get("next", None)
+        if next:
+            self.extra_context = { "next": next }
+        return super().get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        next = request.POST.get("next", None)
+        if next:
+            self.success_url = f"{self.success_url}?next={next}"
+        return super().post(request, *args, **kwargs)
+
 
 def custom_password_reset_confirm(request, uidb64, token):
     """Handles password reset confirmation and redirects to login on success."""

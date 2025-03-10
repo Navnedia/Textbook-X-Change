@@ -99,11 +99,12 @@
             </div>
 
             <button type="submit" class="btn btn-success w-100">Register</button>
+            <input type="hidden" name="next" value="{{ next }}">
         </form>
 
         <div class="text-center mt-3 text-body-secondary">
             Already have an account? 
-            <a href="{% url 'login' %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
+            <a href="{% url 'login' %}{% if next %}?next={{next}}{% endif %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
                 Login
             </a>
         </div>

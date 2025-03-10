@@ -74,7 +74,7 @@
 
         <div class="text-center mt-3 text-body-secondary">
             Already have an account? 
-            <a href="{% url 'register' %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
+            <a href="{% url 'register' %}{% if next %}?next={{next}}{% endif %}" class="fw-bold link-success link-offset-3-hover link-underline-opacity-0 link-underline-opacity-75-hover">
                 Register
             </a>
         </div>
