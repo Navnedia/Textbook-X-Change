@@ -3,6 +3,51 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
+def migrate_listing_data(apps, schema_editor):
+    Listing = apps.get_model("listings", "Listing")
+    Book = apps.get_model("core", "Book")
+    Author = apps.get_model("core", "Author")
+    Course = apps.get_model("core", "Course")
+
+    # For each Listing, create and link the corresponding Book, author, and course records.
+    for listing in Listing.objects.all():
+        # Create a Book record using the fields from Listing, unless a book of the same ISBN exists already.
+        try:
+            book = Book.objects.get(isbn=listing.isbn)
+        except Book.DoesNotExist:
+            book = Book(isbn=listing.isbn, title=listing.title)
+            book.save()
+
+        # Add new or existing author to the book:
+        if listing.author:
+            try:
+                author = Author.objects.get(name=listing.author)
+            except Author.DoesNotExist:
+                author = Author(name=listing.author)
+                author.save()
+
+            book.authors.add(author)
+
+        # Add new or existing course to the listing:
+        if listing.coursecode:
+            try:
+                course = Course.objects.get(code=listing.coursecode, school=listing.seller.profile.school)
+            except Course.DoesNotExist:
+                course = Course(code=listing.coursecode, school=listing.seller.profile.school)
+                course.save()
+
+            book.courses.add(course)
+
+        # Set pickup and shipping flags:
+        if listing.location == "Local":
+            listing.allows_local_pickup = True
+        if listing.location == "Global":
+            listing.allows_shipping = True
+
+        # Link the Listing to the new Book record.
+        listing.book = book
+        listing.save(update_fields=["book", "allows_local_pickup", "allows_shipping"])
+
 
 class Migration(migrations.Migration):
 
@@ -12,6 +57,27 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddField(
+            model_name="listing",
+            name="book",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="Listings",
+                to="core.book",
+            ),
+        ),
+        migrations.AddField(
+            model_name="listing",
+            name="allows_local_pickup",
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name="listing",
+            name="allows_shipping",
+            field=models.BooleanField(default=False),
+        ),
+        migrations.RunPython(migrate_listing_data),
         migrations.RemoveField(
             model_name="listing",
             name="author",
@@ -28,21 +94,11 @@ class Migration(migrations.Migration):
             model_name="listing",
             name="title",
         ),
-        migrations.AddField(
-            model_name="listing",
-            name="allows_local_pickup",
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
-            model_name="listing",
-            name="allows_shipping",
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="listing",
             name="book",
             field=models.ForeignKey(
-                null=True,
+                null=False,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="Listings",
                 to="core.book",
