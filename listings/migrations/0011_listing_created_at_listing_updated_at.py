@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("listings", "0009_remove_listing_author_remove_listing_coursecode_and_more"),
+        ("listings", "0010_remove_listing_author_remove_listing_coursecode_and_more"),
     ]
 
     operations = [

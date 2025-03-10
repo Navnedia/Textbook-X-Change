@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("core", "0003_author_course_book_course_unique_course_at_school_and_more"),
-        ("listings", "0008_alter_listing_condition_alter_listing_location"),
+        ("listings", "0009_listing_sold"),
     ]
 
     operations = [
@@ -47,10 +47,5 @@ class Migration(migrations.Migration):
                 related_name="Listings",
                 to="core.book",
             ),
-        ),
-        migrations.AddField(
-            model_name="listing",
-            name="is_active",
-            field=models.BooleanField(default=True),
-        ),
+        )
     ]

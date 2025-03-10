@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("listings", "0010_listing_created_at_listing_updated_at"),
+        ("listings", "0011_listing_created_at_listing_updated_at"),
     ]
 
     operations = [
