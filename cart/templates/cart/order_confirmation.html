@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Order Confirmation
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 bangers-font">Order Confirmation</h2>
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3">Order #{{ order.pk }} for "{{ order.listing.title }}"</h4>
+        <p><strong>Price:</strong> ${{ order.listing.price }}</p>
+        <p><strong>Shipping Address:</strong><br>{{ order.shipping_address }}</p>
+        <p><strong>Purchase Date:</strong> {{ order.created_at|date:"M d, Y h:i A" }}</p>
+
+        <hr>
+        <div class="mt-4">
+            <a href="{% url 'cart:cart' %}" class="btn btn-primary me-2">Return to Cart</a>
+            <a href="{% url 'listings' %}" class="btn btn-secondary">Browse More</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
+from cart.models import Order
 from listings.models import Listing
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -23,30 +24,41 @@ def cart_view(request):
 
 @login_required
 def checkout_view(request, listing_id):
-    # Retrieve the current cart from the session
     cart = request.session.get("cart", [])
     if listing_id not in cart:
         return redirect("cart:cart")
-    # Get the listing object
+
     listing = get_object_or_404(Listing, id=listing_id)
+
     if request.method == "POST":
-        # Retrieve shipping and payment details from POST data
-        # No need to actually retrieve this info as of demo 1
-        #shipping_address = request.POST.get("shipping_address")
-        #city = request.POST.get("city")
-        #state = request.POST.get("state")
-        #zip_code = request.POST.get("zip_code")
-        #cc_number = request.POST.get("cc_number")
-        #cc_expiration = request.POST.get("cc_expiration")
-        #cc_cvv = request.POST.get("cc_cvv")
-        # Remove the listing from the session cart
+        shipping_address = request.POST.get("shipping_address")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        zip_code = request.POST.get("zip_code")
+
+        # Combine shipping fields into a single address
+        full_address = f"{shipping_address}, {city}, {state} {zip_code}"
+
+        # Create the Order
+        order = Order.objects.create(
+            buyer=request.user,
+            listing=listing,
+            shipping_address=full_address
+        )
+
+        # Mark listing as sold
         listing.sold = True
         listing.save()
-        
-        cart.remove(listing_id)
+
+        cart.remove(listing_id))
         request.session["cart"] = cart
-        # Add a success message 
+
         messages.success(request, "Item purchased successfully!")
-        # Redirect to a confirmation page or back to the cart
-        return redirect("cart:cart")
+        return redirect("cart:order_confirmation", order_id=order.pk)
     return render(request, "cart/checkout.html", {"listing": listing})
+
+@login_required
+def order_confirmation_view(request, order_id):
+    # Make sure the user is the buyer, so nobody else can peek
+    order = get_object_or_404(Order, pk=order_id, buyer=request.user)
+    return render(request, "cart/order_confirmation.html", {"order": order})
