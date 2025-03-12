@@ -8,10 +8,9 @@
     <!-- Create Listing Button -->
     <div class="text-end">
         <a href="{% url 'listings:prelist' %}" class="btn btn-sm">
-            <i class="far fa-plus-square fa-2x"></i></i> 
+            <i class="far fa-plus-square fa-2x"></i> 
         </a>
     </div>
-    </a>
 
     <!-- Listings Display as Rows -->
     <div class="list-group">
@@ -35,22 +34,87 @@
             <!-- Right: Actions & Price -->
             <div class="text-end">
                 {% if listing.sold  %}
-                    <h5><span class="badge text-bg-success">Sold</span></h5>
-                {% else %}
-                    <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
-                        <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
-                    </a>
-                    <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
-                        <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
-                    </a>
-                {% endif %}
+                <h5><span class="badge text-bg-success">Sold</span></h5>
+            {% else %}
+                <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
+                    <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
+                </a>
+                <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
+                    <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
+                </a>
+            {% endif %}
                 <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
             </div>
-            
         </div>
         {% empty %}
         <p class="text-center">No listings available.</p>
         {% endfor %}
     </div>
+
+    <!-- Orders Section -->
+    <h3 class="mt-5 text-center bangers-font">Your Sold Books</h3>
+    <div class="list-group">
+        {% for order in orders %}
+        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
+            
+            <div class="me-3">
+                {% if order.listing.image %}
+                    <img src="{{ order.listing.image.url }}" class="img-thumbnail" width="80" height="80" alt="{{ order.listing.title }}">
+                {% else %}
+                    <img src="https://placehold.co/80" class="img-thumbnail" alt="No Image">
+                {% endif %}
+            </div>
+
+            <!-- Middle: Order Details -->
+            <div class="flex-grow-1">
+                <strong>{{ order.listing.title }}</strong> <br>
+                <small class="text-muted">{{ order.listing.isbn }}</small><br>
+                <small class="text-muted"><strong>Buyer:</strong> {{ order.buyer.username }}</small>
+                <p><strong>Shipping Address:</strong> {{ order.shipping_info }}</p>
+            </div>
+
+            <!-- Right: Shipment Status & Actions -->
+            <div class="text-end">
+                {% if order.has_shipped %}
+                    <h5><span class="badge text-bg-primary">Shipped</span></h5>
+                {% else %}
+                    <button class="btn btn-warning btn-sm confirm-shipment" data-order-id="{{ order.id }}">
+                        Confirm Shipment
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No books sold yet.</p>
+        {% endfor %}
+    </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".confirm-shipment").forEach(button => {
+        button.addEventListener("click", function () {
+            const orderId = this.getAttribute("data-order-id");
+
+            fetch(`/orders/confirm_shipment/${orderId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+});
+</script>
 {% endblock %}
