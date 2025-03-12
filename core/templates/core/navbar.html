@@ -29,7 +29,13 @@ on will have access to all the bootstrap styles and other libraries imported in 
                 <a href="{% url 'wishlist:all_requests' %}" class="nav-link">Requests</a>
                 <a href="{% url 'listings:prelist' %}" class="nav-link">Sell</a>
                 <a href="{% url 'cart:cart' %}" class="nav-link">
-                    <i class="fa fa-cart-shopping"></i>
+                    <i class="fa fa-cart-shopping position-relative">
+                        {% if cart_notification %}
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                <span class="visually-hidden">New Cart Notification</span>
+                            </span>
+                        {% endif %}
+                    </i>
                 </a>
             
                 {% if user.is_authenticated %}
