@@ -86,13 +86,39 @@
                         <a href="{% url 'listings:edit_listing' listing.id %}">
                             <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
                         </a>
-                        <a href="{% url 'listings:delete_listing' listing.id %}">
-                            <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
-                        </a>
+                        <a href="#" class="btn btn-lg text-danger" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteConfirmModal" 
+                        data-url="{% url 'listings:delete_listing' listing.id %}" 
+                        data-title="{{ listing.title }}">
+                        <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
+                    </a>
                     </div>
                 {% endif %}
                 <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
             </div>
+            <!-- used ai and past project to create this -->
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger" id="deleteConfirmLabel">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete <strong id="listingTitle"></strong>? This action cannot be undone.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form id="deleteForm" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             
         </div>
         {% empty %}
@@ -100,4 +126,20 @@
         {% endfor %}
     </div>
 </div>
+<!-- JavaScript to Handle Modal Update -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var deleteConfirmModal = document.getElementById("deleteConfirmModal");
+
+        deleteConfirmModal.addEventListener("show.bs.modal", function (event) {
+            var button = event.relatedTarget;  // Button that triggered the modal
+            var listingTitle = button.getAttribute("data-title");
+            var deleteUrl = button.getAttribute("data-url");
+
+            // Update the modal text and form action
+            document.getElementById("listingTitle").textContent = listingTitle;
+            document.getElementById("deleteForm").action = deleteUrl;
+        });
+    });
+</script>
 {% endblock %}
