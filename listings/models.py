@@ -73,9 +73,9 @@ class Listing(models.Model):
 
     location=models.CharField(max_length=64, choices=Location, default=Location.LOCAL) #! this somehow needs to be a reference to the users university so that we can sort by the university for local/global.
     coursecode=models.CharField(max_length=64, null=True, blank=True)
-    
+
     def get_absolute_url(self):
-        return reverse("textbook_details", kwargs={"pk": self.pk})
+        return reverse('listings:textbook_details', kwargs={'pk': self.pk})
 
     def __str__(self):  
         return f"{self.title} by {self.author} for {self.price}"

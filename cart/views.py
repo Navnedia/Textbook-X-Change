@@ -4,6 +4,10 @@ from cart.models import Order
 from listings.models import Listing
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
 # Create views related to the cart and checkout functionality:
 
 @login_required
@@ -29,6 +33,7 @@ def cart_view(request):
     return render(
         request, "cart/cart.html", {"cart_items": cart_items, "orders": orders}
     )
+
 
 @login_required
 def checkout_view(request, listing_id):
@@ -58,6 +63,9 @@ def checkout_view(request, listing_id):
         listing.sold = True
         listing.save()
 
+        # Send email to the seller (listing's creator)
+        send_listing_sold_email(listing.seller, listing)
+
         cart.remove(listing_id)
         request.session["cart"] = cart
 
@@ -65,8 +73,27 @@ def checkout_view(request, listing_id):
         return redirect("cart:order_confirmation", order_id=order.pk)
     return render(request, "cart/checkout.html", {"listing": listing})
 
+
 @login_required
 def order_confirmation_view(request, order_id):
     # Make sure the user is the buyer, so nobody else can peek
     order = get_object_or_404(Order, pk=order_id, buyer=request.user)
     return render(request, "cart/order_confirmation.html", {"order": order})
+
+
+# Function to send email on listing sale
+def send_listing_sold_email(user, listing):
+    subject = "Your Textbook Listing Has Been Sold!"
+    message = render_to_string('cart/listing_sold_email.html', {
+        'user': user,
+        'listing': listing,
+    })
+    # Send the email with the HTML content
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        html_message=message,  # This ensures the email is sent as HTML
+        fail_silently=True
+    )
