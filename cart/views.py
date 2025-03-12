@@ -50,7 +50,7 @@ def checkout_view(request, listing_id):
         listing.sold = True
         listing.save()
 
-        cart.remove(listing_id))
+        cart.remove(listing_id)
         request.session["cart"] = cart
 
         messages.success(request, "Item purchased successfully!")
