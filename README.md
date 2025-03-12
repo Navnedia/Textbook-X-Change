@@ -19,3 +19,13 @@ If you have any issue you can try to run the DB migrations:
 You will also need to run the management command to load in the schools dataset:
 
 `docker compose run django-web python manage.py loadschools ./us-colleges-and-universities.csv`
+
+If you need to delete all users from the db do the following in order
+
+`docker-compose down`
+`docker-compose up -d`
+`docker exec -it poc-demo-team-two-django-web-1 /bin/bash`
+`python manage.py shell`
+`from django.contrib.auth.models import User`
+`User.objects.all().delete()`
+`docker logs poc-demo-team-two-db-1`

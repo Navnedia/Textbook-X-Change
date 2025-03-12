@@ -2,41 +2,51 @@
 {% block title %}Cart | Textbook X Change{% endblock %}
 
 {% block content %}
-  <div class="container mt-5">
+<div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Your Cart</h2>
-    <div class="row">
-      {% for item in cart_items %}
-      <!-- Display items in cart -->
-      <div class="col-md-4 listing-card">
-        <div class="card shadow-sm">
-          {% if item.image %}
-            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-          {% else %}
-            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ item.title }}</h5>
-            <p class="card-text"><strong>Author:</strong> {{ item.author }}</p>
-            <p class="card-text fw-bold mb-0 fs-5">${{ item.price }}</p>
 
-            <!-- Buttons in the same row -->
-            <div class="d-flex justify-content-between mt-3">
-              <form method="post" action="">
-                {% csrf_token %}
-                <input type="hidden" name="remove_listing_id" value="{{ item.id }}">
-                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-              </form>
-
-              <a href="{% url 'cart:checkout' item.id %}" class="btn btn-primary btn-sm">Proceed to Checkout</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="col text-center">
-        <p>Your cart is empty.</p>
-      </div>
-      {% endfor %}
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
     </div>
-  </div>
+    {% endif %}
+
+<div class="row">
+    {% for item in cart_items %}
+    <!-- Display items in cart -->
+<div class="col-md-4 listing-card">
+<div class="card shadow-sm">
+    {% if item.image %}
+    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+    {% else %}
+    <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
+    {% endif %}
+<div class="card-body">
+    <h5 class="card-title">{{ item.title }}</h5>
+    <p class="card-text"><strong>Author:</strong> {{ item.author }}</p>
+<p class="card-text fw-bold mb-0 fs-5">${{ item.price }}</p>
+
+    <!-- Buttons in the same row -->
+    <div class="d-flex justify-content-between mt-3">
+        <form method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" name="remove_listing_id" value="{{ item.id }}">
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+        </form>
+
+        <a href="{% url 'cart:checkout' item.id %}" class="btn btn-primary btn-sm">Proceed to Checkout</a>
+    </div>
+</div>
+</div>
+</div>
+    {% empty %}
+    <div class="col text-center">
+        <p>Your cart is empty.</p>
+    </div>
+    {% endfor %}
+</div>
+</div>
+
 {% endblock %}
