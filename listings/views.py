@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from .forms import ListingForm, PrelistForm, SearchForm
-from .models import Listing
+from .forms import ListingForm, PrelistForm, SearchForm, FileFieldForm, MultipleFileField, MultipleFileInput
+from .models import Listing, ListingImage
 from django.db.models import Q
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
@@ -23,17 +23,35 @@ def prelist(request: HttpRequest) -> HttpResponse:
 
 # Create Listing View
 @login_required
-def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
-    if not autofill_data and request.method == "POST":
-        form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))    
+# def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
+#     if not autofill_data and request.method == "POST":
+#         form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))    
+#         files=request.FILES.getlist('images')
+#         if form.is_valid():
+#             form.save()
+#             return redirect("dashboard:dashboard") 
+#         else:
+#             print(form.errors)
+
+#     else:
+#         form = ListingForm(instance=autofill_data)
+#     return render(request, "create_listing.html", {"form": form})
+def create_listing(request, autofill_data: Listing | None = None) -> HttpResponse:
+    if request.method == "POST":
+        form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect("dashboard:dashboard") 
+            listing = form.save(commit=False)
+            listing.seller = request.user
+            listing.save()
+            images = request.FILES.getlist('images')
+            for image in images:
+                ListingImage.objects.create(listing=listing, image=image)
+            return redirect("dashboard:dashboard")
         else:
             print(form.errors)
-
     else:
         form = ListingForm(instance=autofill_data)
+        image_form = ListingImage()
     return render(request, "create_listing.html", {"form": form})
 
 # Listing Page with Filtering
