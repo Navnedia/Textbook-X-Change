@@ -28,6 +28,14 @@
         .add-to-cart:hover {
             background-color: darkgrey;
         }
+        .listing-img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain; /* Ensures the whole image is visible without cropping */
+            background-color: #f8f9fa; /* Light gray background for consistency */
+            border-radius: 5px;
+            padding: 5px;
+        }
     </style>
 {% endblock styles %}
 
@@ -75,14 +83,13 @@
                 {% for listing in listings %}
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm position-relative">
-                        {% if listing.image %}
-                            <img src="{{ listing.image.url }}" 
-                                alt="{{ listing.title }}" 
-                                class="card-img-top" 
-                                style="height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
-                        {% endif %}
+                        {% with first_image=listing.images.first %}
+                            {% if first_image %}
+                                <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="listing-img">
+                            {% else %}
+                                <img src="https://via.placeholder.com/200x200" alt="No Image Available" class="listing-img">
+                            {% endif %}
+                        {% endwith %}
                         <div class="card-body">
                             <h5 class="card-title">{{ listing.title }}</h5>
                             <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
