@@ -42,6 +42,24 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Available Textbooks</h2>
+    {% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3 w-100" style="z-index: 1050;">
+        <div class="d-flex justify-content-center">
+            {% for message in messages %}
+                <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body text-center">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+
 
     <div class="row">
         <!-- Left Sidebar: Filter Options -->
@@ -106,7 +124,7 @@
                                 <form method="post" action="">
                                     {% csrf_token %}
                                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    <button type="submit" class="btn add-to-cart btn-success z-1" {% if listing.seller == user %}disabled{% endif %}>
+                                    <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()" {% if listing.seller == user %}disabled{% endif %}>
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </form>
@@ -122,5 +140,7 @@
             </div>
         </div>
     </div>
+
+
 </div>
 {% endblock %}
