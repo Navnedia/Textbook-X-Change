@@ -34,6 +34,12 @@
 
             <!-- Right: Actions & Price -->
             <div class="text-end">
+                <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
+                    <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
+                </a>
+                <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
+                    <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
+                </a>
                 <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
             </div>
         </div>
@@ -62,7 +68,7 @@
                 <strong>{{ order.listing.title }}</strong> <br>
                 <small class="text-muted">{{ order.listing.isbn }}</small><br>
                 <small class="text-muted"><strong>Buyer:</strong> {{ order.buyer.username }}</small>
-                <p><strong>Shipping Address:</strong> {{ order.shipping_info }}</p>
+                <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
             </div>
 
             <!-- Right: Shipment Status & Actions -->
@@ -70,9 +76,9 @@
                 {% if order.has_shipped %}
                     <h5><span class="badge text-bg-primary">Shipped</span></h5>
                 {% else %}
-                    <button class="btn btn-warning btn-sm confirm-shipment" data-order-id="{{ order.id }}">
+                    <a href="{% url 'dashboard:confirm_shipment' order.id %}" class="btn btn-warning btn-sm">
                         Confirm Shipment
-                    </button>
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -81,32 +87,4 @@
         {% endfor %}
     </div>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".confirm-shipment").forEach(button => {
-        button.addEventListener("click", function () {
-            const orderId = this.getAttribute("data-order-id");
-
-            fetch(`/orders/confirm_shipment/${orderId}/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert("Error: " + data.error);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
-    });
-});
-</script>
 {% endblock %}

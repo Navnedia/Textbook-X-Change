@@ -13,13 +13,13 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "dashboard/dashboard.html", {"listings": listings, "orders": orders})
 
 @login_required
-def confirm_shipment(request, order_id):
+def confirm_shipment(request: HttpRequest, order_id) -> HttpResponse:
     """Mark an order as shipped."""
-    order = get_object_or_404(Order, id=order_id, listing__seller=request.user)
+    order = get_object_or_404(Order, pk=order_id, listing__seller=request.user)
 
-    if order and order.shipping_info:  
+    if order and order.shipping_address:  
         order.has_shipped = True
         order.save()
-        return JsonResponse({"message": "Shipment confirmed!"})
+        return redirect("dashboard:dashboard")
     
-    return JsonResponse({"error": "Cannot confirm shipment without buyer shipping details."}, status=400)
+    return redirect("dashboard:dashboard")
