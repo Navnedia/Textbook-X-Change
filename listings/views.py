@@ -48,14 +48,12 @@ def browse_search(request):
                 cart.append(listing_id)
             request.session["cart"] = cart
         return redirect("listings:browse_search")
-    
-    # For GET requests, simply display listings with selected filters:
-    listings = Listing.objects.filter(sold=False) # Filter to only unsold listings.
+
+    # For GET requests, display listings with selected filters:
+    listings = Listing.objects.filter(sold=False)  # Filter to only unsold listings.
 
     search = SearchForm(request.GET)
     if search.is_valid():
-         # I stripped out the dash for matching ISBN, but maybe we should regex check that it is an ISBN first.
-         # If we know it's an ISBN we can also simply the query filter to only match ISBN.
         query = search.cleaned_data["q"].replace("-", "")
         location_filter = search.cleaned_data["location"]
 
@@ -63,7 +61,7 @@ def browse_search(request):
         if query:
             listings = listings.filter(
                 Q(title__icontains=query) | Q(author__icontains=query) | Q(isbn__exact=query)
-            )  # Filter by title, author, and ISBN containing the search term
+            )
 
         # Apply location filter
         if location_filter == "Global":
@@ -71,14 +69,37 @@ def browse_search(request):
         elif location_filter == "Local":
             listings = listings.filter(location="Local")
 
-    # Order results by newest first
-    listings = listings.order_by("-id").distinct()
+    # Apply price range filter if min_price or max_price is provided
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if min_price:
+        listings = listings.filter(price__gte=min_price)
+
+    if max_price:
+        listings = listings.filter(price__lte=max_price)
+
+    # Sorting logic (from previous update)
+    sort_by = request.GET.get('sort_by', '')
+    if sort_by == 'price_low_high':
+        listings = listings.order_by('price')
+    elif sort_by == 'price_high_low':
+        listings = listings.order_by('-price')
+    elif sort_by == 'best_sellers':
+        listings = listings.order_by('-sales_count')  # Assuming `sales_count` is a field
+    elif sort_by == 'newly_listed':
+        listings = listings.order_by('-created_at')  # Assuming `created_at` is a datetime field
+    elif sort_by == 'most_viewed':
+        listings = listings.order_by('-view_count')  # Assuming `view_count` is a field
+
+    # Order results by newest first if no sorting is applied
+    if not sort_by:
+        listings = listings.order_by("-id")
 
     return render(request, "browse.html", {
         "listings": listings,
         "search_form": search
     })
-
 # Textbook Details View
 def textbook_details(request, pk):
     listing = get_object_or_404(Listing, pk=pk)

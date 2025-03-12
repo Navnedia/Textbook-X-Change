@@ -59,7 +59,30 @@
                         </div>
                     {% endfor %}
 
-                    <button type="submit" class="btn btn-primary btn-sm mt-3">Apply Filter</button>
+
+                    <!-- Price Range Filter -->
+                    <h5 class="fw-bold mt-4">Filter by Price</h5>
+                    <div class="form-group">
+                        <label for="min_price">Min Price</label>
+                        <input type="number" class="form-control" name="min_price" id="min_price" value="{{ request.GET.min_price }}" placeholder="Min Price">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_price">Max Price</label>
+                        <input type="number" class="form-control" name="max_price" id="max_price" value="{{ request.GET.max_price }}" placeholder="Max Price">
+                    </div>
+
+                    <!-- Sort By Filter -->
+                    <h5 class="fw-bold mt-4">Sort by</h5>
+                    <div class="form-group">
+                        <label for="sort_by">Sort</label>
+                        <select class="form-control" name="sort_by" id="sort_by">
+                            <option value="">Select Sorting Option</option>
+                            <option value="price_low_high" {% if request.GET.sort_by == 'price_low_high' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high_low" {% if request.GET.sort_by == 'price_high_low' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4 w-100">Apply Filter</button>
                 </form>
 
                 <!-- Request a Textbook Button (Updated to Link to requestbook) -->
