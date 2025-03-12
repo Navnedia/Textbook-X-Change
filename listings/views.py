@@ -5,6 +5,10 @@ from .models import Listing
 from django.db.models import Q
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
+from wishlist.models import WishList
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 # Create listing views here:
 
@@ -25,10 +29,31 @@ def prelist(request: HttpRequest) -> HttpResponse:
 @login_required
 def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
     if not autofill_data and request.method == "POST":
-        form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))    
+        form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))
         if form.is_valid():
-            form.save()
-            return redirect("dashboard:dashboard") 
+            listing = form.save()  # Save the listing and assign it to the 'listing' variable
+
+            # Now check for any requests that match the ISBN of the new listing
+            matching_requests = WishList.objects.filter(isbn=listing.isbn)  # Find matching requests
+
+            # Send email for each matching request
+            for req in matching_requests:
+                subject = "Your Requested Textbook is Now Available!"
+                message = render_to_string('wishlist/request_match_email.html', {
+                    'user': req.user,
+                    'listing': listing,  # The listing variable is now available here
+                    'listing_url': request.build_absolute_uri(listing.get_absolute_url()),  # Assuming this method exists
+                })
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    [req.user.email],
+                    html_message=message  # Sends the email as HTML
+                )
+
+            # Redirect to the dashboard after the listing is created and email is sent
+            return redirect("dashboard:dashboard")
         else:
             print(form.errors)
 
