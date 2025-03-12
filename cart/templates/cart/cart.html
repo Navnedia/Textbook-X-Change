@@ -38,5 +38,41 @@
       </div>
       {% endfor %}
     </div>
+
+    <!-- Order History Section -->
+    <h3 class="mt-5 text-center bangers-font">Your Order History</h3>
+    <div class="list-group">
+        {% for order in orders %}
+        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
+            
+            <div class="me-3">
+                {% if order.listing.image %}
+                    <img src="{{ order.listing.image.url }}" class="img-thumbnail" width="80" height="80" alt="{{ order.listing.title }}">
+                {% else %}
+                    <img src="https://placehold.co/80" class="img-thumbnail" alt="No Image">
+                {% endif %}
+            </div>
+
+            <!-- Middle: Order Details -->
+            <div class="flex-grow-1">
+                <strong>{{ order.listing.title }}</strong> <br>
+                <small class="text-muted">{{ order.listing.isbn }}</small><br>
+                <small class="text-muted"><strong>Seller:</strong> {{ order.listing.seller.username }}</small>
+                <p><strong>Price:</strong> ${{ order.listing.price }}</p>
+            </div>
+
+            <!-- Right: Shipment Status -->
+            <div class="text-end">
+                {% if order.has_shipped %}
+                    <h5><span class="badge text-bg-primary">Shipped</span></h5>
+                {% else %}
+                    <h5><span class="badge text-bg-warning">Not Shipped Yet</span></h5>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No past orders yet.</p>
+        {% endfor %}
+    </div>
   </div>
 {% endblock %}

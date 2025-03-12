@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-5 page-container">
-    <!-- Page Title in Bangers Font -->
+    <!-- Page Title -->
     <h1 class="text-center bangers-font title-extra-large mb-4">Textbook Details</h1> 
 
     <!-- Breadcrumb Navigation -->
@@ -19,25 +19,22 @@
     <!-- Product Details -->
     <div class="card shadow-lg p-4 product-card">
         <div class="row g-4">
-            <!-- Image Section -->
+            <!-- Manual Image Navigation (Bigger Image) -->
             <div class="col-md-5 d-flex align-items-center justify-content-center">
-                <div class="border rounded p-3 bg-light book-image-container">
-                    {% if listing.image %}
-                        <img src="{{ listing.image.url }}" class="img-fluid rounded book-image" alt="{{ listing.title }}">
-                    {% else %}
-                        <img src="https://via.placeholder.com/300x350" class="img-fluid rounded book-image-placeholder" alt="No Image Available">
-                    {% endif %}
+                <div class="position-relative book-image-container">
+                    <img id="bookImage" src="https://via.placeholder.com/400x450" class="img-fluid rounded book-image" alt="Book Image">
+
+                    <!-- Left Arrow -->
+                    <button id="prevImage" class="btn btn-dark carousel-btn left-btn">&lt;</button>
+
+                    <!-- Right Arrow -->
+                    <button id="nextImage" class="btn btn-dark carousel-btn right-btn">&gt;</button>
                 </div>
             </div>
 
-            <!-- Details Section -->
+            <!-- Details Section (Aligned for Less Space) -->
             <div class="col-md-7">
                 <h3 class="fw-bold bangers-font title-small">{{ listing.title }}</h3> 
-
-                <!-- Star Ratings -->
-                <div class="star-rating">
-                    ⭐⭐⭐⭐⭐ <span class="text-muted fs-6">(4.8/5)</span>
-                </div>
 
                 <p class="text-muted">by <strong>{{ listing.author }}</strong></p>
                 
@@ -51,6 +48,16 @@
 
                     <h5 class="fw-bold">Location</h5>
                     <p class="book-details-text">{{ listing.location }}</p>
+
+                    <!-- New Section: Seller Info -->
+                    <h5 class="fw-bold mt-4">Seller Information</h5>
+                    <p class="book-details-text">Sold by <strong>{{ listing.seller.username }}</strong></p>
+
+                    <!-- New Section: Tags (Optional) -->
+                    <h5 class="fw-bold mt-4">Tags</h5>
+                    <span class="badge bg-dark text-light">Mathematics</span>
+                    <span class="badge bg-dark text-light">Engineering</span>
+                    <span class="badge bg-dark text-light">Used Book</span>
                 </div>
 
                 <!-- Description -->
@@ -60,7 +67,7 @@
                 </div>
             </div>
 
-            <!-- Add to Cart Button Positioned to the Right -->
+            <!-- Add to Cart Button -->
             <div class="col-md-12 d-flex justify-content-end">
                 <form method="post" action="">
                     {% csrf_token %}
@@ -91,6 +98,35 @@
     </div>
 </div>
 
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript for Manual Image Switching -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const images = [
+            "https://via.placeholder.com/400x450",
+            "https://via.placeholder.com/400x450/aaaaaa/ffffff?text=Image+2",
+            "https://via.placeholder.com/400x450/888888/ffffff?text=Image+3"
+        ];
+        let currentIndex = 0;
+
+        const bookImage = document.getElementById("bookImage");
+        const prevImage = document.getElementById("prevImage");
+        const nextImage = document.getElementById("nextImage");
+
+        prevImage.addEventListener("click", function () {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            bookImage.src = images[currentIndex];
+        });
+
+        nextImage.addEventListener("click", function () {
+            currentIndex = (currentIndex + 1) % images.length;
+            bookImage.src = images[currentIndex];
+        });
+    });
+</script>
+
 <!-- Custom Styling -->
 <style>
     .bangers-font {
@@ -101,92 +137,55 @@
         font-size: 1.8rem;
     }
 
-    /* Grey Background for the Main Page Container */
+    /* Page Container */
     .page-container {
-        background-color: #f2f2f2; /* Light grey background */
+        background-color: #f2f2f2;
         padding: 30px;
         border-radius: 10px;
     }
 
-    /* Grey Background for Main Product Card */
+    /* Product Card */
     .product-card {
-        background-color: #e6e6e6; /* Slightly darker grey */
+        background-color: #e6e6e6;
         border-radius: 10px;
     }
 
-    /* Image Styling */
+    /* Book Image Container */
     .book-image-container {
-        border: 2px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
+        position: relative;
         width: 100%;
-        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    .book-image-placeholder {
+    /* Increased Image Size */
+    .book-image {
         width: 100%;
-        height: 350px;
-        object-fit: cover;
-        border-radius: 8px;
+        max-width: 400px;
+        height: auto;
     }
 
-    /* Star Rating */
-    .star-rating {
-        font-size: 22px;
-        color: #FFD700; /* Gold stars */
+    /* Manual Image Navigation Buttons */
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: black;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 24px;
+        cursor: pointer;
+        border-radius: 5px;
     }
 
-    /* Add to Cart Button */
-    .add-to-cart-btn {
-        background: linear-gradient(90deg, #343a40, #000);
-        font-size: 22px;
-        font-weight: bold;
-        padding: 15px 30px;
-        border-radius: 10px;
-        transition: background 0.3s ease-in-out, transform 0.2s;
+    .left-btn {
+        left: 10px;
     }
 
-    .add-to-cart-btn:hover {
-        background: linear-gradient(90deg, #000, #343a40);
-        transform: scale(1.1);
-    }
-
-    /* Similar Books */
-    .similar-book-card {
-        border-radius: 10px;
-        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .similar-book-card:hover {
-        transform: translateY(-5px);
-    }
-
-    /* Make ISBN, Condition, and Location Bold & Match Description */
-    .book-details-text {
-        font-size: 1.1rem;  /* Adjusted size to match description */
-        font-weight: normal;
-        line-height: 1.6;
-        color: #555;
-    }
-
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-        .book-details {
-            text-align: center;
-        }
-
-        .btn-dark {
-            width: 100%;
-        }
-
-        .add-to-cart-btn {
-            width: 100%;
-            text-align: center;
-        }
+    .right-btn {
+        right: 10px;
     }
 </style>
 

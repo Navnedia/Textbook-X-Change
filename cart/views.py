@@ -6,7 +6,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 # Create views related to the cart and checkout functionality:
 
+@login_required
 def cart_view(request):
+    """View the cart and past orders."""
     # Handle removal of an item from the cart
     if request.method == "POST":
         remove_id = request.POST.get("remove_listing_id")
@@ -17,10 +19,16 @@ def cart_view(request):
                 cart.remove(remove_id)
                 request.session["cart"] = cart
         return redirect("cart:cart")
-    # For GET requests, display the cart items
+
     cart_item_ids = request.session.get("cart", [])
     cart_items = Listing.objects.filter(id__in=cart_item_ids)
-    return render(request, "cart/cart.html", {"cart_items": cart_items})
+
+    # Fetch order history for the logged-in user
+    orders = Order.objects.filter(buyer=request.user).order_by("-id")
+
+    return render(
+        request, "cart/cart.html", {"cart_items": cart_items, "orders": orders}
+    )
 
 @login_required
 def checkout_view(request, listing_id):
