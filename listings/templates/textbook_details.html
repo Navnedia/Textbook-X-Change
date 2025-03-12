@@ -19,9 +19,10 @@
     <!-- Product Details -->
     <div class="card shadow-lg p-4 product-card">
         <div class="row g-4">
-            <!-- Image Section -->
+            <!-- Manual Image Navigation (Bigger Image) -->
             <div class="col-md-5 d-flex align-items-center justify-content-center">
                 <div class="position-relative book-image-container">
+
                     {% with images=listing.images.all %}
                         {% if images %}
                             <img id="bookImage" src="{{ images.0.image.url }}" class="img-fluid rounded book-image" alt="{{ listing.title }}">
@@ -38,9 +39,10 @@
                 </div>
             </div>
 
-            <!-- Details Section -->
+            <!-- Details Section (Aligned for Less Space) -->
             <div class="col-md-7">
                 <h3 class="fw-bold bangers-font title-small">{{ listing.title }}</h3> 
+
                 <p class="text-muted">by <strong>{{ listing.author }}</strong></p>
                 
                 <!-- Book Details -->
@@ -54,8 +56,17 @@
                     <h5 class="fw-bold">Location</h5>
                     <p class="book-details-text">{{ listing.location }}</p>
 
+
+                    <!-- New Section: Seller Info -->
                     <h5 class="fw-bold mt-4">Seller Information</h5>
                     <p class="book-details-text">Sold by <strong>{{ listing.seller.username }}</strong></p>
+
+                    <!-- New Section: Tags (Optional) -->
+                    <h5 class="fw-bold mt-4">Tags</h5>
+                    <span class="badge bg-dark text-light">Mathematics</span>
+                    <span class="badge bg-dark text-light">Engineering</span>
+                    <span class="badge bg-dark text-light">Used Book</span>
+
                 </div>
 
                 <!-- Description -->
@@ -83,12 +94,13 @@
 <!-- JavaScript for Manual Image Switching -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
         let images = [];
         {% for image in listing.images.all %}
             images.push("{{ image.image.url }}");
         {% endfor %}
-
         let currentIndex = 0;
+
         const bookImage = document.getElementById("bookImage");
         const prevImage = document.getElementById("prevImage");
         const nextImage = document.getElementById("nextImage");
@@ -104,6 +116,7 @@
                 bookImage.src = images[currentIndex];
             });
         }
+
     });
 </script>
 
@@ -144,6 +157,7 @@
         width: 100%;
         max-width: 400px;
         height: auto;
+
     }
 
     /* Manual Image Navigation Buttons */
@@ -159,6 +173,7 @@
         cursor: pointer;
         border-radius: 5px;
     }
+
 
     .left-btn {
         left: 10px;

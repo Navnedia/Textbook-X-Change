@@ -9,6 +9,9 @@ from django.contrib import messages
 
 # Create listing views here:
 
+def user_profile(request):
+    return render(request, 'user_profile.html')
+
 # Prelist View
 @login_required
 def prelist(request: HttpRequest) -> HttpResponse:
