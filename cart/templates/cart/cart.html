@@ -9,11 +9,13 @@
       <!-- Display items in cart -->
       <div class="col-md-4 listing-card">
         <div class="card shadow-sm">
-          {% if item.image %}
-            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-          {% else %}
-            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
-          {% endif %}
+          {% with first_image=item.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ item.title }}" class="cart-img">
+                    {% else %}
+                        <img src="https://placehold.co/200" class="cart-img" alt="No Image Available">
+                    {% endif %}
+                {% endwith %}
           <div class="card-body">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text"><strong>Author:</strong> {{ item.author }}</p>
