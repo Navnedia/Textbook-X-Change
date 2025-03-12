@@ -1,72 +1,29 @@
 {% extends "core/base.html" %}
 {% block title %}Dashboard - Your Listings{% endblock %}
 
-{% block styles %}
-    <style>
-        .dashboard-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            padding: 5px;
-        }
-
-        .list-group-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-icons a {
-            margin: 0 8px;
-            font-size: 20px;
-            color: #333;
-            transition: color 0.2s ease;
-        }
-
-        .action-icons a:hover {
-            color: #007bff;
-        }
-
-        .btn-add-listing {
-            font-size: 24px;
-            color: #28a745;
-            transition: color 0.2s ease;
-        }
-
-        .btn-add-listing:hover {
-            color: #218838;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
     <h2 class="text-center mb-4 bangers-font">Dashboard</h2>
 
     <!-- Create Listing Button -->
     <div class="text-end mb-3">
-        <a href="{% url 'listings:prelist' %}" class="btn">
-            <i class="far fa-plus-square fa-2x btn-add-listing"></i> 
+        <a href="{% url 'listings:prelist' %}" class="btn btn-success">
+            <i class="far fa-plus-square"></i> Add Listing
         </a>
     </div>
 
     <!-- Listings Display -->
     <div class="list-group">
         {% for listing in listings %}
-        <div class="list-group-item">
+        <div class="list-group-item d-flex align-items-center justify-content-between">
             
             <!-- Left: Image -->
             <div class="me-3">
                 {% with first_image=listing.images.first %}
                     {% if first_image %}
-                        <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="dashboard-img">
+                        <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="img-thumbnail" width="80" height="80">
                     {% else %}
-                        <img src="https://placehold.co/80" alt="No Image Available" class="dashboard-img">
+                        <img src="https://placehold.co/80" alt="No Image Available" class="img-thumbnail">
                     {% endif %}
                 {% endwith %}
             </div>
@@ -82,61 +39,58 @@
                 {% if listing.sold %}
                     <h5><span class="badge bg-success">Sold</span></h5>
                 {% else %}
-                    <div class="action-icons">
-                        <a href="{% url 'listings:edit_listing' listing.id %}">
-                            <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
-                        </a>
-                        <a href="#" class="btn btn-lg text-danger" 
+                    <a href="{% url 'listings:edit_listing' listing.id %}" class="text-decoration-none me-3">
+                        <i class="far fa-pen-to-square text-primary"></i>  <!-- Edit Icon -->
+                    </a>
+                    <a href="#" class="text-decoration-none text-danger" 
                         data-bs-toggle="modal" 
                         data-bs-target="#deleteConfirmModal" 
                         data-url="{% url 'listings:delete_listing' listing.id %}" 
                         data-title="{{ listing.title }}">
                         <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
                     </a>
-                    </div>
                 {% endif %}
-                <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
+                <p class="fw-bold mt-2">${{ listing.price }}</p>
             </div>
-            <!-- used ai and past project to create this -->
-            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title text-danger" id="deleteConfirmLabel">Confirm Delete</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete <strong id="listingTitle"></strong>? This action cannot be undone.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <form id="deleteForm" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            
         </div>
         {% empty %}
         <p class="text-center">No listings available.</p>
         {% endfor %}
     </div>
 </div>
-<!-- JavaScript to Handle Modal Update -->
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteConfirmLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="listingTitle"></strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Delete Modal JavaScript -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var deleteConfirmModal = document.getElementById("deleteConfirmModal");
 
         deleteConfirmModal.addEventListener("show.bs.modal", function (event) {
-            var button = event.relatedTarget;  // Button that triggered the modal
+            var button = event.relatedTarget;
             var listingTitle = button.getAttribute("data-title");
             var deleteUrl = button.getAttribute("data-url");
 
-            // Update the modal text and form action
             document.getElementById("listingTitle").textContent = listingTitle;
             document.getElementById("deleteForm").action = deleteUrl;
         });
