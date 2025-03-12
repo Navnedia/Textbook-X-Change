@@ -5,6 +5,7 @@ from .models import Listing, ListingImage
 from django.db.models import Q
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 # Create listing views here:
 
@@ -64,7 +65,8 @@ def browse_search(request):
             cart = request.session.get("cart", [])
             if listing_id not in cart:
                 cart.append(listing_id)
-            request.session["cart"] = cart
+                request.session["cart"] = cart
+                messages.success(request, "Item added to cart!")
         return redirect("listings:browse_search")
     
     # For GET requests, simply display listings with selected filters:
@@ -108,7 +110,8 @@ def textbook_details(request, pk):
             cart = request.session.get("cart", [])
             if listing_id not in cart:
                 cart.append(listing_id)
-            request.session["cart"] = cart
+                request.session["cart"] = cart
+                messages.success(request, "Item added to cart!") 
         return redirect("cart:cart")
 
     return render(request, "textbook_details.html", {"listing": listing})
@@ -124,6 +127,11 @@ def edit_listing(request, listing_id):
             return redirect("dashboard:dashboard")
     else:
         form = ListingForm(instance=listing)
+
+        for field in form.fields:
+            if field not in ["price", "additional_details", "coursecode"]:
+                form.fields[field].widget.attrs['readonly'] = True
+                
     return render(request, "edit_listing.html", {"form": form})
 
 @login_required
