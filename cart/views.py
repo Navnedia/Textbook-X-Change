@@ -78,5 +78,5 @@ def send_listing_sold_email(user, listing):
 def checkout(request, item_id):
     listing = get_object_or_404(Listing, id=item_id)
     user = request.user
-    # Handle the purchase logic here
+    # Handles the purchase logic here
     send_listing_sold_email(user, listing)
