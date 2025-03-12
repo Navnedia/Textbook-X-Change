@@ -1,0 +1,125 @@
+{% extends "core/base.html" %}
+{% block title %}User Profile{% endblock %}
+
+{% block styles %}
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .profile-card {
+            padding: 20px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .profile-card h2 {
+            font-family: 'Bangers', cursive;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-form .form-control {
+            margin-bottom: 15px;
+        }
+
+        .profile-pic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .confirm-btn:hover {
+            background-color: darkgrey;
+            color: black;
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container mt-5 profile-container">
+    <div class="profile-card shadow">
+        <h2>User Profile</h2>
+
+        <!-- ✅ Success Message Notification -->
+        {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <input type="text" name="full_name" class="form-control" placeholder="Full Name" value="{{ user.get_full_name }}" required>
+                    <input type="text" name="username" class="form-control" placeholder="Username" value="{{ user.username }}" required>
+                    <input type="email" name="email" class="form-control" placeholder="Email Address" value="{{ user.email }}" required>
+                    <input type="text" name="phone" class="form-control" placeholder="Phone Number" value="{{ user.profile.phone_number }}">
+                    <input type="password" name="password" class="form-control" placeholder="Edit Password">
+                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password">
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <input type="text" name="street_address" class="form-control" placeholder="Street Address" value="{{ user.profile.street_address }}">
+                    <input type="text" name="city" class="form-control" placeholder="City" value="{{ user.profile.city }}">
+                    <input type="text" name="state" class="form-control" placeholder="State/Province" value="{{ user.profile.state }}">
+                    <input type="text" name="zip" class="form-control" placeholder="ZIP/Postal Code" value="{{ user.profile.zip_code }}">
+                    <input type="text" name="university" class="form-control" placeholder="University" value="{{ user.profile.university }}">
+
+                    <!-- Profile Picture Upload -->
+                    <div class="profile-pic-container">
+                        <img id="profileImage" src="{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}https://via.placeholder.com/120{% endif %}" alt="Profile Picture" class="profile-pic">
+                        <label for="profilePicUpload" class="text-primary" style="cursor: pointer;">Add Profile Picture</label>
+                        <input type="file" name="profile_pic" id="profilePicUpload" class="d-none" onchange="previewImage(event)">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn confirm-btn mt-3">Confirm Changes</button>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript for Profile Picture Preview -->
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById('profileImage');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+
+{% endblock %}
