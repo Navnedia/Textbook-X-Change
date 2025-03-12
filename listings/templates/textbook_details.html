@@ -20,7 +20,7 @@
     <div class="card shadow-lg p-4 product-card">
         <div class="row g-4">
             <!-- Manual Image Navigation (Bigger Image) -->
-            <div class="col-md-5 d-flex align-items-center justify-content-center">
+            {% comment %} <div class="col-md-5 d-flex align-items-center justify-content-center">
                 <div class="position-relative book-image-container">
                     <img id="bookImage" src="https://via.placeholder.com/400x450" class="img-fluid rounded book-image" alt="Book Image">
 
@@ -29,6 +29,16 @@
 
                     <!-- Right Arrow -->
                     <button id="nextImage" class="btn btn-dark carousel-btn right-btn">&gt;</button>
+                </div>
+            </div> {% endcomment %}
+            <!-- Image Section -->
+            <div class="col-md-5 d-flex align-items-center justify-content-center">
+                <div class="border rounded p-3 bg-light book-image-container">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" class="img-fluid rounded book-image" alt="{{ listing.title }}">
+                    {% else %}
+                        <img src="https://placehold.co/500" class="img-fluid rounded book-image-placeholder" alt="No Image Available">
+                    {% endif %}
                 </div>
             </div>
 
@@ -54,10 +64,10 @@
                     <p class="book-details-text">Sold by <strong>{{ listing.seller.username }}</strong></p>
 
                     <!-- New Section: Tags (Optional) -->
-                    <h5 class="fw-bold mt-4">Tags</h5>
+                    {% comment %} <h5 class="fw-bold mt-4">Tags</h5>
                     <span class="badge bg-dark text-light">Mathematics</span>
                     <span class="badge bg-dark text-light">Engineering</span>
-                    <span class="badge bg-dark text-light">Used Book</span>
+                    <span class="badge bg-dark text-light">Used Book</span> {% endcomment %}
                 </div>
 
                 <!-- Course Code -->
@@ -86,7 +96,7 @@
     </div>
 
     <!-- Similar Books Section -->
-    <div class="mt-5">
+    {% comment %} <div class="mt-5">
         <h4 class="fw-bold bangers-font title-small text-center">Similar Books</h4> 
         <div class="row">
             {% for i in "1234" %}
@@ -102,7 +112,7 @@
             </div>
             {% endfor %}
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 
 <!-- Include Bootstrap JS -->
