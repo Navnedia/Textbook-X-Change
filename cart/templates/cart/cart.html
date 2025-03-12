@@ -4,7 +4,6 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Your Cart</h2>
-
     {% if messages %}
     <div class="alert alert-success">
         {% for message in messages %}
@@ -12,7 +11,6 @@
         {% endfor %}
     </div>
     {% endif %}
-
 <div class="row">
     {% for item in cart_items %}
     <!-- Display items in cart -->
@@ -48,5 +46,4 @@
     {% endfor %}
 </div>
 </div>
-
 {% endblock %}
