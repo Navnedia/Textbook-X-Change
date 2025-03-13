@@ -1,6 +1,8 @@
 {% extends "core/base.html" %}
 {% block title %}User Profile{% endblock %}
 
+{% load static %}  <!-- Load static files in Django -->
+
 {% block styles %}
     <style>
         .profile-container {
@@ -107,7 +109,12 @@
 
                     <!-- Profile Picture Upload -->
                     <div class="profile-pic-container">
-                        <img id="profileImage" src="{{ profile.profile_pic.url|default:'https://via.placeholder.com/100' }}" alt="Profile Picture" class="profile-pic">
+                        <img id="profileImage" src="
+                            {% if profile.profile_pic.url %}
+                                {{ profile.profile_pic.url }}
+                            {% else %}
+                                {% static 'core/images/profile-placeholder.png' %}
+                            {% endif %}" alt="Profile Picture" class="profile-pic">
                         <label for="profilePicUpload" class="text-primary" style="cursor: pointer;">Add Profile Picture</label>
                         <input type="file" name="profile_pic" id="profilePicUpload" class="d-none" onchange="previewImage(event)">
                     </div>
@@ -124,7 +131,12 @@
 
         <!-- Profile Picture at the Top -->
         <div class="profile-pic-container">
-            <img src="{{ profile.profile_pic.url|default:'https://via.placeholder.com/100' }}" alt="Profile Picture" class="profile-pic">
+            <img id="profileImage" src="
+                {% if profile.profile_pic.url %}
+                    {{ profile.profile_pic.url }}
+                {% else %}
+                    {% static 'core/images/profile-placeholder.png' %}
+                {% endif %}" alt="Profile Picture" class="profile-pic">
         </div>
 
         <hr>
