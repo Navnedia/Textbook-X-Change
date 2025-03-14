@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
-    listings = Listing.objects.filter(seller=request.user).order_by("-id")
+    listings = Listing.objects.filter(seller=request.user, sold=False).order_by("-id")
     orders = Order.objects.filter(listing__seller=request.user).order_by("-id")
     
     return render(request, "dashboard/dashboard.html", {"listings": listings, "orders": orders})
