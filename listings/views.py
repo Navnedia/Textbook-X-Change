@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from .forms import ListingForm, PrelistForm, SearchForm
-from .models import Listing
+from .forms import ListingForm, PrelistForm, SearchForm, FileFieldForm, MultipleFileField, MultipleFileInput
+from .models import Listing, ListingImage
 from django.db.models import Q
 from .services.autofill import PrelistSuggestionsProvider
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from wishlist.models import WishList
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.contrib import messages
 
 # Create listing views here:
 
@@ -28,6 +29,7 @@ def prelist(request: HttpRequest) -> HttpResponse:
 
     return render(request, "prelist.html", {"form": PrelistForm()})
 
+
 # Create Listing View
 @login_required
 def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -> HttpResponse:
@@ -35,6 +37,10 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
         form = ListingForm(request.POST, request.FILES, instance=Listing(seller=request.user))
         if form.is_valid():
             listing = form.save()  # Save the listing and assign it to the 'listing' variable
+
+            images = request.FILES.getlist('images')
+            for image in images:
+                ListingImage.objects.create(listing=listing, image=image)
 
             # Now check for any requests that match the ISBN of the new listing
             matching_requests = WishList.objects.filter(isbn=listing.isbn)  # Find matching requests
@@ -58,12 +64,10 @@ def create_listing(request: HttpRequest, autofill_data: Listing | None = None) -
 
             # Redirect to the dashboard after the listing is created and email is sent
             return redirect("dashboard:dashboard")
-        else:
-            print(form.errors)
-
     else:
         form = ListingForm(instance=autofill_data)
     return render(request, "create_listing.html", {"form": form})
+
 
 # Listing Page with Filtering
 def browse_search(request):
@@ -75,7 +79,8 @@ def browse_search(request):
             cart = request.session.get("cart", [])
             if listing_id not in cart:
                 cart.append(listing_id)
-            request.session["cart"] = cart
+                request.session["cart"] = cart
+                messages.success(request, "Item added to cart!")
         return redirect("listings:browse_search")
 
     # For GET requests, display listings with selected filters:
@@ -140,7 +145,8 @@ def textbook_details(request, pk):
             cart = request.session.get("cart", [])
             if listing_id not in cart:
                 cart.append(listing_id)
-            request.session["cart"] = cart
+                request.session["cart"] = cart
+                messages.success(request, "Item added to cart!") 
         return redirect("cart:cart")
 
     return render(request, "textbook_details.html", {"listing": listing})
@@ -156,6 +162,11 @@ def edit_listing(request, listing_id):
             return redirect("dashboard:dashboard")
     else:
         form = ListingForm(instance=listing)
+
+        for field in form.fields:
+            if field not in ["price", "additional_details", "coursecode"]:
+                form.fields[field].widget.attrs['readonly'] = True
+                
     return render(request, "edit_listing.html", {"form": form})
 
 @login_required
