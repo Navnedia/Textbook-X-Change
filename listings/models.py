@@ -49,6 +49,19 @@ class Listing(models.Model):
     @property
     def author(self):
         return self.book.authors.first()
+    
+    @property
+    def authors(self):
+        return self.book.authors.all()
+    
+    @property
+    def coursecode(self):
+        first_course = self.book.courses.first()
+        return first_course.code if first_course else None
+    
+    @property
+    def courses(self):
+        return self.book.courses.all()
 
     # @property # Is this technically a property, I don't think so...
     def local_school(self) -> School | None:
