@@ -6,51 +6,129 @@
     <h2 class="text-center mb-4 bangers-font">Dashboard</h2>
 
     <!-- Create Listing Button -->
-    <div class="text-end">
-        <a href="{% url 'listings:prelist' %}" class="btn btn-sm">
-            <i class="far fa-plus-square fa-2x"></i></i> 
+    <div class="text-end mb-3">
+        <a href="{% url 'listings:prelist' %}" class="btn btn-success">
+            <i class="far fa-plus-square"></i> Add Listing
         </a>
     </div>
-    </a>
 
-    <!-- Listings Display as Rows -->
+    <!-- Listings Display -->
     <div class="list-group">
         {% for listing in listings %}
-        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
-            
-            <div class="me-3">
-                {% if listing.image %}
-                    <img src="{{ listing.image.url }}" class="img-thumbnail" width="80" height="80" alt="{{ listing.title }}">
-                {% else %}
-                    <img src="https://placehold.co/80" class="img-thumbnail" alt="No Image">
-                {% endif %}
-            </div>
+            <div class="list-group-item d-flex align-items-center justify-content-between">
+                <!-- Left: Image -->
+                <div class="me-3">
+                    {% with first_image=listing.images.first %}
+                        {% if first_image %}
+                            <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="img-thumbnail" width="80" height="80">
+                        {% else %}
+                            <img src="https://placehold.co/80" alt="No Image Available" class="img-thumbnail">
+                        {% endif %}
+                    {% endwith %}
+                </div>
 
-            <!-- Middle: Book Details (Title & ISBN Stacked) -->
-            <div class="flex-grow-1">
-                <strong>{{ listing.title }}</strong> <br> <!-- Title in Bold -->
-                <small class="text-muted">{{ listing.isbn }}</small>  <!-- ISBN in Smaller Font -->
-            </div>
+                <!-- Middle: Book Details -->
+                <div class="flex-grow-1">
+                    <strong>{{ listing.title }}</strong> <br>
+                    <small class="text-muted">ISBN: {{ listing.isbn }}</small>
+                </div>
 
-            <!-- Right: Actions & Price -->
-            <div class="text-end">
-                {% if listing.sold  %}
-                    <h5><span class="badge text-bg-success">Sold</span></h5>
-                {% else %}
-                    <a href="{% url 'listings:edit_listing' listing.id %}" class="btn btn-lg ">
-                        <i class="far fa-pen-to-square"></i>  <!-- Edit Icon -->
+                <!-- Right: Actions & Price -->
+                <div class="text-end">
+                    <a href="{% url 'listings:edit_listing' listing.id %}" class="text-decoration-none me-3">
+                        <i class="far fa-pen-to-square text-primary"></i>  <!-- Edit Icon -->
                     </a>
-                    <a href="{% url 'listings:delete_listing' listing.id %}" class="btn btn-lg ">
+                    <a href="#" class="text-decoration-none text-danger" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteConfirmModal" 
+                        data-url="{% url 'listings:delete_listing' listing.id %}" 
+                        data-title="{{ listing.title }}">
                         <i class="far fa-trash-alt"></i>  <!-- Delete Icon -->
                     </a>
-                {% endif %}
-                <p class="fw-bold mt-2">${{ listing.price }}</p>  <!-- Price Below Icons -->
+
+                    <p class="fw-bold mt-2">${{ listing.price }}</p>
+                </div>
             </div>
-            
-        </div>
         {% empty %}
-        <p class="text-center">No listings available.</p>
+            <p class="text-center">No listings available.</p>
         {% endfor %}
     </div>
 </div>
+
+    <!-- Orders Section -->
+<h3 class="mt-5 text-center bangers-font">Your Sold Books</h3>
+<div class="list-group">
+    {% for order in orders %}
+        <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
+            <div class="me-3">
+                {% with first_image=order.listing.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ order.listing.title }}" class="img-thumbnail" width="80" height="80">
+                    {% else %}
+                        <img src="https://placehold.co/80" class="img-thumbnail" width="80" height="80" alt="No Image Available">
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Middle: Order Details -->
+            <div class="flex-grow-1">
+                <strong>{{ order.listing.title }}</strong> <br>
+                <small class="text-muted">{{ order.listing.isbn }}</small><br>
+                <small class="text-muted"><strong>Buyer:</strong> {{ order.buyer.username }}</small>
+                <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+            </div>
+
+            <!-- Right: Shipment Status & Actions -->
+            <div class="text-end">
+                {% if order.has_shipped %}
+                    <h5><span class="badge text-bg-primary">Shipped</span></h5>
+                {% else %}
+                    <a href="{% url 'dashboard:confirm_shipment' order.id %}" class="btn btn-warning btn-sm">
+                        Confirm Shipment
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center">No books sold yet.</p>
+    {% endfor %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteConfirmLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="listingTitle"></strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Delete Modal JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var deleteConfirmModal = document.getElementById("deleteConfirmModal");
+
+        deleteConfirmModal.addEventListener("show.bs.modal", function (event) {
+            var button = event.relatedTarget;
+            var listingTitle = button.getAttribute("data-title");
+            var deleteUrl = button.getAttribute("data-url");
+
+            document.getElementById("listingTitle").textContent = listingTitle;
+            document.getElementById("deleteForm").action = deleteUrl;
+        });
+    });
+</script>
 {% endblock %}

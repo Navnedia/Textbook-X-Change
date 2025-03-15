@@ -28,12 +28,38 @@
         .add-to-cart:hover {
             background-color: darkgrey;
         }
+        .listing-img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain; /* Ensures the whole image is visible without cropping */
+            background-color: #f8f9fa; /* Light gray background for consistency */
+            border-radius: 5px;
+            padding: 5px;
+        }
     </style>
 {% endblock styles %}
 
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Available Textbooks</h2>
+    {% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3 w-100" style="z-index: 1050;">
+        <div class="d-flex justify-content-center">
+            {% for message in messages %}
+                <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body text-center">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+
 
     <div class="row">
         <!-- Left Sidebar: Filter Options -->
@@ -46,9 +72,9 @@
                     {% comment %} Display location filtering options {% endcomment %}
                     {% for location in search_form.location %}
                         <div class="form-check">
-                            {% comment %} 
-                                For whatever reason I couldn't get the default value 
-                                to be All, so I just manually checked all 
+                            {% comment %}
+                                For whatever reason I couldn't get the default value
+                                to be All, so I just manually checked all
                             {% endcomment %}
                             {% if location.choice_label == "All" %}
                                 <input type="radio" name="location" value="All" class="form-check-input" id="id_location_0" checked>
@@ -59,7 +85,30 @@
                         </div>
                     {% endfor %}
 
-                    <button type="submit" class="btn btn-primary btn-sm mt-3">Apply Filter</button>
+
+                    <!-- Price Range Filter -->
+                    <h5 class="fw-bold mt-4">Filter by Price</h5>
+                    <div class="form-group">
+                        <label for="min_price">Min Price</label>
+                        <input type="number" class="form-control" name="min_price" id="min_price" value="{{ request.GET.min_price }}" placeholder="Min Price">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_price">Max Price</label>
+                        <input type="number" class="form-control" name="max_price" id="max_price" value="{{ request.GET.max_price }}" placeholder="Max Price">
+                    </div>
+
+                    <!-- Sort By Filter -->
+                    <h5 class="fw-bold mt-4">Sort by</h5>
+                    <div class="form-group">
+                        <label for="sort_by">Sort</label>
+                        <select class="form-control" name="sort_by" id="sort_by">
+                            <option value="">Select Sorting Option</option>
+                            <option value="price_low_high" {% if request.GET.sort_by == 'price_low_high' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high_low" {% if request.GET.sort_by == 'price_high_low' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4 w-100">Apply Filter</button>
                 </form>
 
                 <!-- Request a Textbook Button (Updated to Link to requestbook) -->
@@ -68,21 +117,20 @@
                 </a>
             </div>
         </div>
-        
+
         <!-- Right Section: Listings -->
         <div class="col-md-9">
             <div class="row">
                 {% for listing in listings %}
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm position-relative">
-                        {% if listing.image %}
-                            <img src="{{ listing.image.url }}" 
-                                alt="{{ listing.title }}" 
-                                class="card-img-top" 
-                                style="height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="card-img-top bg-light text-center text-muted" style="height: 200px; line-height: 200px;">No Image</div>
-                        {% endif %}
+                        {% with first_image=listing.images.first %}
+                            {% if first_image %}
+                                <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="listing-img card-img-top">
+                            {% else %}
+                                <img src="https://placehold.co/200" alt="No Image Available" class="listing-img card-img-top">
+                            {% endif %}
+                        {% endwith %}
                         <div class="card-body">
                             <h5 class="card-title">{{ listing.title }}</h5>
                             <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
@@ -99,7 +147,7 @@
                                 <form method="post" action="">
                                     {% csrf_token %}
                                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    <button type="submit" class="btn add-to-cart btn-success z-1" {% if listing.seller == user %}disabled{% endif %}>
+                                    <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()" {% if listing.seller == user %}disabled{% endif %}>
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </form>
@@ -115,5 +163,7 @@
             </div>
         </div>
     </div>
+
+
 </div>
 {% endblock %}

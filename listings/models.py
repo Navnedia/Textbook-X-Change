@@ -13,7 +13,6 @@ class Listing(models.Model):
 
     additional_details=models.TextField(null=True, blank=True) #! listing additional details?
     price=models.DecimalField(max_digits=10, decimal_places=2)
-    image=models.ImageField(upload_to="listing_images/", blank=True, null=True)
     sold=models.BooleanField(default=False)
     
     class Condition(models.TextChoices):
@@ -45,7 +44,15 @@ class Listing(models.Model):
         return seller_profile.school if seller_profile else None
 
     def get_absolute_url(self):
-        return reverse("textbook_details", kwargs={"pk": self.pk})
+        return reverse('listings:textbook_details', kwargs={'pk': self.pk})
 
     def __str__(self):  
         return f"{self.title} for {self.price}"
+    
+
+class ListingImage(models.Model):
+    listing = models.ForeignKey(Listing, related_name="images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="listing_images/")
+
+    def __str__(self):
+        return f"Image for {self.listing.title}"

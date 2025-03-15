@@ -7,9 +7,60 @@
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <!-- Non-Editable Fields -->
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            {{ form.title }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">ISBN</label>
+            {{ form.isbn }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Author</label>
+            {{ form.author }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Condition</label>
+            {{ form.condition }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Location</label>
+            {{ form.location }}
+        </div>
+
+        <!-- Editable Fields -->
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            {{ form.price }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            {{ form.additional_details }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Course Code</label>
+            {{ form.coursecode }}
+        </div>
+
         <button type="submit" class="btn btn-success">Update Listing</button>
         <a href="{% url 'dashboard:dashboard' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<!-- used ai for this section -->
+<style>
+    input[readonly], select[readonly], textarea[readonly] {
+        background-color: #e9ecef !important;
+        pointer-events: none;
+    }
+</style>
+
 {% endblock %}

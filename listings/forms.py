@@ -35,19 +35,42 @@ class PrelistForm(forms.Form):
             'placeholder': 'Enter the ISBN'}
         )
     )
+# from django documentation
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
+class FileFieldForm(forms.Form):
+    file_field = MultipleFileField()
 
 class ListingForm(forms.ModelForm):
+    images = MultipleFileField(required=False)
+    
     class Meta:
         model=Listing
-        fields=["additional_details", "price", "condition", "location", "image"]
+        # fields=["title", "isbn", "author", "additional_details", "price", "condition", "location","coursecode"]
+        fields=["additional_details", "price", "condition", "location"]
         # labels={
         #     "title":"Title",
         #     "isbn":"ISBN",
         #     "author":"Author",
         #     "additional_details":"Additional Details",
         #     "price":"Price",
-        #     "image":"Upload Image",
         #     "condition":"Condition",
         #     "location":"location",
         #     "coursecode":"Course Code"
@@ -58,8 +81,7 @@ class ListingForm(forms.ModelForm):
         #     "author":forms.TextInput(attrs={"class":"form-control"}),
         #     "additional_details":forms.Textarea(attrs={"class":"form-control"}),
         #     "price":forms.NumberInput(attrs={"class":"form-control"}),
-        #     "image": forms.ClearableFileInput(attrs={"class": "form-control"}), 
         #     "condition":forms.Select(attrs={"class":"form-control"}),
         #     "location":forms.Select(attrs={"class":"form-control"}),
-        #   "coursecode":forms.TextInput(attrs={"class":"form-control"})  
+        #     "coursecode":forms.TextInput(attrs={"class":"form-control"})  
         # }
