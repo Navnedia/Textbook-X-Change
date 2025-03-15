@@ -8,7 +8,6 @@ from login.models import Profile
 
 class Listing(models.Model):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    # courses = models.ManyToManyField(Course, blank=True, related_name="listings")
     book = models.ForeignKey(Book, null=True, on_delete=models.PROTECT, related_name="Listings", db_index=True)
 
     additional_details=models.TextField(null=True, blank=True) #! listing additional details?
@@ -36,8 +35,6 @@ class Listing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # coursecode=models.CharField(max_length=64, null=True, blank=True)
-
     @property
     def title(self):
         return self.book.title
@@ -63,7 +60,7 @@ class Listing(models.Model):
     def courses(self):
         return self.book.courses.all()
 
-    # @property # Is this technically a property, I don't think so...
+    @property
     def local_school(self) -> School | None:
         seller_profile = Profile.objects.filter(user=self.seller).first()
         return seller_profile.school if seller_profile else None
