@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("listings", "0010_remove_listing_author_remove_listing_coursecode_and_more"),
+        ("listings", "0011_separate_listing_model"),
     ]
 
     operations = [
@@ -20,5 +20,10 @@ class Migration(migrations.Migration):
             model_name="listing",
             name="updated_at",
             field=models.DateTimeField(auto_now=True),
+        ),
+        migrations.AlterField(
+            model_name="listing",
+            name="created_at",
+            field=models.DateTimeField(auto_now_add=True),
         ),
     ]

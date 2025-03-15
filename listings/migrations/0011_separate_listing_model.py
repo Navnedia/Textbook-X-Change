@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("core", "0003_author_course_book_course_unique_course_at_school_and_more"),
-        ("listings", "0009_listing_sold"),
+        ("listings", "0010_support_multiple_images"),
     ]
 
     operations = [
