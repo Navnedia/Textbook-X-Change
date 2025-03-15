@@ -5,5 +5,5 @@ from .models import Order
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('listing', 'buyer', 'shipping_address', 'has_shipped', 'created_at')
-    search_fields = ('listing__title', 'buyer__username', 'shipping_address')
+    search_fields = ('listing__book__title', 'listing__book__isbn', 'buyer__username', 'buyer__profile__school__name', 'shipping_address')
     list_filter = ('has_shipped', 'created_at')
