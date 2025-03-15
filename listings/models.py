@@ -38,6 +38,18 @@ class Listing(models.Model):
 
     # coursecode=models.CharField(max_length=64, null=True, blank=True)
 
+    @property
+    def title(self):
+        return self.book.title
+    
+    @property
+    def isbn(self):
+        return self.book.isbn
+    
+    @property
+    def author(self):
+        return self.book.authors.first()
+
     # @property # Is this technically a property, I don't think so...
     def local_school(self) -> School | None:
         seller_profile = Profile.objects.filter(user=self.seller).first()
