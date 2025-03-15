@@ -36,6 +36,11 @@ class Course(models.Model):
     def __str__(self):
         return self.code
     
+class Subject(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name    
 
 class Author(models.Model):
     name = models.CharField(max_length=70)
@@ -56,8 +61,9 @@ class Book(models.Model):
     summary = models.CharField(max_length=2000, null=True, blank=True) # The official book description if available.
     courses = models.ManyToManyField(Course, blank=True, related_name="Books")
     Stock_cover = models.ImageField(upload_to="book_covers/", blank=True, null=True) # The official stock cover image.
-    # edition?
-    # subject/category tags?
+    edition = models.CharField(max_length=25, null=True, blank=True)
+    subjects = models.ManyToManyField(Subject, blank=True, related_name="Books")
+
     # created_by? (system, user, autofilled) or just created_manually flag.
 
     created_at = models.DateTimeField(auto_now_add=True)
