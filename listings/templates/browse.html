@@ -144,13 +144,17 @@
 
                             <div class="card-text">
                                 {% comment %} Add to item to card form plus button. {% endcomment %}
-                                <form method="post" action="">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()" {% if listing.seller == user %}disabled{% endif %}>
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </form>
+                                <div class="card-text">
+                                    {% if listing.seller != request.user %}
+                                        <form method="post" action="">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                            <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </form>                    
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
