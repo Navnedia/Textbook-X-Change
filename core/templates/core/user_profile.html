@@ -4,10 +4,12 @@
 {% block styles %}
     <style>
         .profile-container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: auto;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .profile-card, .info-card {
@@ -15,14 +17,9 @@
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             background-color: #fff;
-        }
-
-        .profile-card {
-            width: 55%;
-        }
-
-        .info-card {
-            width: 40%;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
         }
 
         .profile-card h2, .info-card h2 {
@@ -33,6 +30,13 @@
 
         .profile-form .form-control {
             margin-bottom: 10px;
+        }
+
+        .profile-form label {
+            font-weight: bold;
+            text-align: center;
+            display: block;
+            margin-bottom: 5px;
         }
 
         .profile-pic-container {
@@ -71,7 +75,7 @@
 
 {% block content %}
 <div class="container mt-5 profile-container">
-    <!-- Left: User Profile Form -->
+    <!-- User Profile Form -->
     <div class="profile-card shadow">
         <h2>User Profile</h2>
 
@@ -88,43 +92,34 @@
         <form method="POST" enctype="multipart/form-data" class="profile-form">
             {% csrf_token %}
 
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" name="full_name" class="form-control" placeholder="Full Name" value="{{ user.get_full_name|default:'' }}" required>
-                    <input type="text" name="username" class="form-control" placeholder="Username" value="{{ user.username }}" required>
-                    <input type="email" name="email" class="form-control" placeholder="Email Address" value="{{ user.email }}" required>
-                    <input type="text" name="phone" class="form-control" placeholder="Phone Number" value="{{ profile.phone_number|default:'' }}">
-                    <input type="password" name="password" class="form-control" placeholder="Edit Password">
-                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password">
-                </div>
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Full Name" value="{{ user.get_full_name|default:'' }}" required>
 
-                <div class="col-md-6">
-                    <input type="text" name="street_address" class="form-control" placeholder="Street Address" value="{{ profile.street_address|default:'' }}">
-                    <input type="text" name="city" class="form-control" placeholder="City" value="{{ profile.city|default:'' }}">
-                    <input type="text" name="state" class="form-control" placeholder="State/Province" value="{{ profile.state|default:'' }}">
-                    <input type="text" name="zip" class="form-control" placeholder="ZIP/Postal Code" value="{{ profile.zip_code|default:'' }}">
-                    <input type="text" name="university" class="form-control" placeholder="University" value="{{ profile.university|default:'' }}">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Username" value="{{ user.username }}" required>
 
-                    <!-- Profile Picture Upload -->
-                    <div class="profile-pic-container">
-                        <img id="profileImage" src="{{ profile.profile_pic.url|default:'https://via.placeholder.com/100' }}" alt="Profile Picture" class="profile-pic">
-                        <label for="profilePicUpload" class="text-primary" style="cursor: pointer;">Add Profile Picture</label>
-                        <input type="file" name="profile_pic" id="profilePicUpload" class="d-none" onchange="previewImage(event)">
-                    </div>
-                </div>
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" value="{{ user.email }}" required>
+
+            <!-- Profile Picture Upload -->
+            <div class="profile-pic-container">
+                <img id="profileImage" src="{{ profile.profile_pic.url|default:'https://via.placeholder.com/100' }}" alt="Profile Picture" class="profile-pic">
+                <label for="profilePicUpload" class="text-primary" style="cursor: pointer;">Add Profile Picture</label>
+                <input type="file" name="profile_pic" id="profilePicUpload" class="d-none" onchange="previewImage(event)">
             </div>
 
             <button type="submit" class="btn confirm-btn mt-3">Confirm Changes</button>
         </form>
     </div>
 
-    <!-- Right: User Profile Summary -->
+    <!-- User Profile Summary -->
     <div class="info-card shadow">
         <h2>Profile Summary</h2>
 
         <!-- Profile Picture at the Top -->
         <div class="profile-pic-container">
-            <img src="{{ profile.profile_pic.url|default:'https://via.placeholder.com/100' }}" alt="Profile Picture" class="profile-pic">
+            <img src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}https://via.placeholder.com/100{% endif %}" 
+             alt="Profile Picture" class="profile-pic">
         </div>
 
         <hr>
@@ -133,12 +128,6 @@
         <p><strong>Full Name:</strong> {{ user.get_full_name|default:"Not provided" }}</p>
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Phone:</strong> {{ profile.phone_number|default:"Not provided" }}</p>
-        <p><strong>Street Address:</strong> {{ profile.street_address|default:"Not provided" }}</p>
-        <p><strong>City:</strong> {{ profile.city|default:"Not provided" }}</p>
-        <p><strong>State/Province:</strong> {{ profile.state|default:"Not provided" }}</p>
-        <p><strong>ZIP Code:</strong> {{ profile.zip_code|default:"Not provided" }}</p>
-        <p><strong>University:</strong> {{ profile.university|default:"Not provided" }}</p>
     </div>
 </div>
 

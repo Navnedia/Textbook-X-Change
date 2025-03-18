@@ -27,17 +27,9 @@ def user_profile(request):
 
         # Ensure profile fields update correctly
         if profile:
-            profile.phone_number = request.POST.get("phone")
-            profile.street_address = request.POST.get("street_address")
-            profile.city = request.POST.get("city")
-            profile.state = request.POST.get("state")
-            profile.zip_code = request.POST.get("zip")
-            profile.university = request.POST.get("university")
-
             # ✅ Save the uploaded profile picture
-            if "profile_pic" in request.FILES:
+            if "profile_pic" in request.FILES and profile:
                 profile.profile_pic = request.FILES["profile_pic"]
-
             profile.save()  # Save profile changes
 
         user.save()  # Save user changes
