@@ -17,11 +17,24 @@
     <div class="card shadow-lg p-4 custom-grey-box">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <div class="form-group text">
+                <label for="title">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                {{ form.isbn }}
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author</label>
+                {{ form.author }}
+            </div>
 
             <!-- Conditionally hide the submit button after success -->
             {% if not success %}
-            <div class="text-center">
+            <div class="text-center mt-4">
                 <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
             </div>
             {% endif %}
