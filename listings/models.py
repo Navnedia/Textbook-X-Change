@@ -25,6 +25,7 @@ class Listing(models.Model):
     class Location(models.TextChoices):
         LOCAL = "Local", "Local"
         GLOBAL = "Global", "Global"
+        BOTH = "Both", "Both"
 
     location = models.CharField(max_length=64, choices=Location, default=Location.LOCAL) #! this somehow needs to be a reference to the users university so that we can sort by the university for local/global.
     
