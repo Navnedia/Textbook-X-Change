@@ -29,14 +29,13 @@ def request_book(request):
             isbn = form.cleaned_data['isbn']
             
             # Check if a listing already exists with this ISBN
-            existing_listing = Listing.objects.filter(isbn=isbn).first()
+            is_avaliable = Listing.objects.filter(isbn=isbn, sold=False).exists()
             
-            if existing_listing:
+            if is_avaliable:
                 # A listing exists, so show a link to that listing
                 return render(request, "wishlist/requestbook.html", {
                     "form": form,
-                    "existing_listing": existing_listing,
-                    "show_existing": True
+                    "is_avaliable": True
                 })
             else:
                 # No listing exists, so save the wishlist request
