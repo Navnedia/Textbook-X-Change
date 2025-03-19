@@ -113,7 +113,10 @@
                     </div>
                     <div class="form-group mt-3">
                         <label for="price">Your Price</label>
-                        {{ form.price }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.price }}
+                        </div>
                     </div>
                     <button type="button" id="back-to-step-2" class="btn btn-secondary mt-4">Back</button>
                     <button type="button" id="next-to-step-4" class="btn btn-primary mt-4">Next</button>
@@ -146,7 +149,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const progressBar = document.getElementById("progress-bar");
     const isbnField = document.getElementById("id_isbn");
-    // Fetch eBay Prices on Step 3 Load
+    // Trigger fetch eBay Prices way before step 3 so it's ready in time.
     fetchSuggestedPrice(isbnField.value.trim());
 
     const step1 = document.getElementById("step-1");
@@ -195,15 +198,15 @@ document.addEventListener("DOMContentLoaded", function() {
         progressBar.style.width = "100%";
         progressBar.textContent = "Step 4 of 4";
 
-          // Autofill Step 4 with user inputs
-          document.getElementById("confirm-title").textContent = document.getElementById("id_title").value;
-          document.getElementById("confirm-isbn").textContent = document.getElementById("id_isbn").value;
-          document.getElementById("confirm-author").textContent = document.getElementById("id_author").value;
-          document.getElementById("confirm-condition").textContent = document.getElementById("id_condition").value;
-          document.getElementById("confirm-location").textContent = document.getElementById("id_location").value;
-          document.getElementById("confirm-coursecode").textContent = document.getElementById("id_coursecode").value;
-          document.getElementById("confirm-additional_details").textContent = document.getElementById("id_additional_details").value;
-          document.getElementById("confirm-price").textContent = "$" + (document.getElementById("id_price").value || "N/A");
+        // Autofill Step 4 with user inputs
+        document.getElementById("confirm-title").textContent = document.getElementById("id_title").value;
+        document.getElementById("confirm-isbn").textContent = document.getElementById("id_isbn").value;
+        document.getElementById("confirm-author").textContent = document.getElementById("id_author").value;
+        document.getElementById("confirm-condition").textContent = document.getElementById("id_condition").value;
+        document.getElementById("confirm-location").textContent = document.getElementById("id_location").value;
+        document.getElementById("confirm-coursecode").textContent = document.getElementById("id_coursecode").value;
+        document.getElementById("confirm-additional_details").textContent = document.getElementById("id_additional_details").value;
+        document.getElementById("confirm-price").textContent = "$" + (document.getElementById("id_price").value || "N/A");
     });
 
     backToStep3.addEventListener("click", function() {
@@ -217,25 +220,19 @@ document.addEventListener("DOMContentLoaded", function() {
     function fetchSuggestedPrice(isbn) {
         if (!isbn) return;
         fetch("{% url 'pricing_engine:get_suggestions' %}?isbn=" + encodeURIComponent(isbn))
-                .then(response => response.json())
-                .then(data => {
-                    const usedData = data.used || {};
-                    const priceDisplay = document.getElementById("suggested-price-display");
-                    if (usedData.median_price) {
-                        priceDisplay.textContent = "$" + usedData.median_price;
-                    } else {
-                        priceDisplay.textContent = "N/A";
-                    }
-                })
-                .catch(error => console.error("Error fetching price:", error));
+            .then(response => response.json())
+            .then(data => {
+                const usedData = data.used || {};
+                const priceDisplay = document.getElementById("suggested-price-display");
+                if (usedData.median_price) {
+                    priceDisplay.textContent = "$" + usedData.median_price;
+                    document.getElementById("id_price").value = usedData.median_price || "";
+                } else {
+                    priceDisplay.textContent = "N/A";
+                }
+            })
+            .catch(error => console.error("Error fetching price:", error));
     }
-
-    document.getElementById("next-to-step-3").addEventListener("click", function () {
-        const isbnField = document.getElementById("id_isbn");
-        if (isbnField) {
-            fetchSuggestedPrice(isbnField.value.trim());
-        }
-    });
 });
 </script>
 {% endblock %}
