@@ -46,7 +46,7 @@
 
         {% if is_avaliable %}
             <p class="text-center text-success mt-3 fw-bold h5">Good news! The textbook 
-                "<a href="{% url "listings:browse_search" %}?isbn={{form.isbn.value}}" class="text-success">{{ form.title.value }}</a>"
+                "<a href="{% url "listings:browse_search" %}?q={{form.isbn.value}}" class="text-success">{{ form.title.value }}</a>"
                 is already available!
             </p>  
             {% endif %}

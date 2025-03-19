@@ -37,7 +37,7 @@ on will have access to all the bootstrap styles and other libraries imported in 
                     </a>
                     <ul class="dropdown-menu">
                         <li><span class="dropdown-item-text">Logged in as: {{ user.username }}</span></li>
-                        <li><a class="dropdown-item icon-link" href="{% url 'user_profile' %}"><i class="fa fa-user"></i>Profile</a></li>
+                        {% comment %} <li><a class="dropdown-item icon-link" href="{% url 'user_profile' %}"><i class="fa fa-user"></i>Profile</a></li> {% endcomment %}
                         <li><a class="dropdown-item icon-link" href="{% url 'dashboard:dashboard' %}">
                             <i class="fa-solid fa-table-columns"></i>Dashboard
                             {% if dashboard_notifications %}
