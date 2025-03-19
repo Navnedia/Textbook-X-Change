@@ -28,6 +28,15 @@
         .add-to-cart:hover {
             background-color: darkgrey;
         }
+        
+        .add-to-cart.in-cart {
+            background-color: #28a745;
+        }
+        
+        .add-to-cart.in-cart:hover {
+            background-color: #218838;
+        }
+        
         .listing-img {
             width: 100%;
             height: 200px;
@@ -144,17 +153,21 @@
 
                             <div class="card-text">
                                 {% comment %} Add to item to card form plus button. {% endcomment %}
-                                <div class="card-text">
+                                <form method="post" action="">
+                                    {% csrf_token %}
                                     {% if listing.seller != request.user %}
-                                        <form method="post" action="">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                            <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </form>                    
+                                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                                    {% if request.session.cart %}
+                                        <button type="submit" class="btn add-to-cart z-1 {% if listing.id in request.session.cart %}in-cart{% else %}btn-success{% endif %}" onclick="showCartPopup()">
+                                            <i class="fas {% if listing.id in request.session.cart %}fa-check{% else %}fa-plus{% endif %}"></i>
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn add-to-cart z-1 btn-success" onclick="showCartPopup()">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     {% endif %}
-                                </div>
+                                    {% endif %}
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -170,4 +183,11 @@
 
 
 </div>
+<script>
+    function showCartPopup() {
+        var cartToast = new bootstrap.Toast(document.getElementById('cartToast'));
+        cartToast.show();
+    }
+</script>
+
 {% endblock %}
