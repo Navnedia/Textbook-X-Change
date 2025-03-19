@@ -1,20 +1,25 @@
-{% extends "core/base.html" %}
-{% block title %}Sell on Textbook X Change{% endblock title %}
+{% extends "core/skeleton.html" %}
+{% block title %}Sell on Textbook X Change{% endblock %}
+{% load static %}
 
-{% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+{% block body %}
+    {% include "core/navbar_minimal.html" %}
+{% endblock %}
+
+{% block body-container %}
+<div class="py-3 text-center">
+    <h1>Create a Listing</h1>
+    <!-- Progress Bar -->
+    <div class="progress mb-4">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+            Step 1 of 4
+        </div>
+    </div>
+</div>
+
+<div class="container d-flex justify-content-center align-items-center">
     <div class="row w-100">
         <div class="col-md-6 mx-auto text-center">
-
-            <h1>Create a Listing</h1>
-
-            <!-- Progress Bar -->
-            <div class="progress mb-4">
-                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                    Step 1 of 4
-                </div>
-            </div>
-
             <form id="listing-form" action="{% url 'listings:create_listing' %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
