@@ -19,7 +19,7 @@ class OrderInline(admin.StackedInline):
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
     list_display = ('book__title', 'book__isbn', 'price', 'condition', 'location', 'seller__username', 'sold')
-    search_fields = ('seller__username', 'book__title', 'book__isbn', 'book__authors__name', 'book__courses__code', 'seller__profile__school__name')
+    search_fields = ('seller__username', 'book__title', 'book__isbn', 'book__authors__name', 'book__courses__code', 'seller__profile__school__name', 'book__subjects__name')
     list_filter = ('condition', 'location', 'sold', 'created_at')
     readonly_fields = ('created_at', 'updated_at')
     inlines = [ListingImageInline, OrderInline]
