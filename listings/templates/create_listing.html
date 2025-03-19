@@ -91,45 +91,30 @@
                 <!-- Step 3: Pricing Information -->
                 <div id="step-3" style="display: none;">
                     <h3>Step 3: Pricing</h3>
-                    <div class="form-group">
-                        <label for="suggested-price">Suggested Price </label>
-                        <input type="text" id="suggested-price" class="form-control" readonly>
+                    <div class="text-center mb-3">
+                        <h5>Suggested Price</h5>
+                        <div class="position-relative d-inline-block p-2 bg-dark text-white rounded"
+                             style="z-index: 10;">
+                            Our suggested price: <span id="suggested-price-display">$-</span>
+                            <div class="arrow-down"
+                                 style="position: absolute; left: 50%; transform: translateX(-50%); top: 100%; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid black;"></div>
+                        </div>
                     </div>
-                    <div class="form-group">
+                    <div class="progress-stacked">
+                        <div class="progress" style="width: 33%">
+                            <div class="progress-bar bg-warning"></div>
+                        </div>
+                        <div class="progress" style="width: 34%">
+                            <div class="progress-bar bg-success"></div>
+                        </div>
+                        <div class="progress" style="width: 33%">
+                            <div class="progress-bar bg-danger"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
                         <label for="price">Your Price</label>
                         {{ form.price }}
-                        {% if form.price.errors %}
-        <div class="text-danger small mt-1">
-            {{ form.price.errors|striptags }}
-        </div>
-    {% endif %}
                     </div>
-
-                    <!-- Table displaying quartile data -->
-                    <div id="price-table-container">
-                        <h3>Price Breakdown</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Median Price</th>
-                                    <th>First Quartile (Q1)</th>
-                                    <th>Third Quartile (Q3)</th>
-                                    <th>Suggested List Price</th>
-                                    <th>Suggested Buy Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td id="median-price">-</td>
-                                    <td id="q1-price">-</td>
-                                    <td id="q3-price">-</td>
-                                    <td id="suggested-list-price">-</td>
-                                    <td id="suggested-buy-price">-</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
                     <button type="button" id="back-to-step-2" class="btn btn-secondary mt-4">Back</button>
                     <button type="button" id="next-to-step-4" class="btn btn-primary mt-4">Next</button>
                 </div>
@@ -231,21 +216,26 @@ document.addEventListener("DOMContentLoaded", function() {
     // Fetch eBay Prices for Suggested Price
     function fetchSuggestedPrice(isbn) {
         if (!isbn) return;
-
-        fetch("{% url 'pricing_engine:get_suggestions' %}?isbn=" + isbn)
-            .then(response => response.json())
-            .then(data => {
-                const usedData = data.used || {};
-                document.getElementById("suggested-price").value = usedData.median_price || "N/A";
-                document.getElementById("id_price").value = usedData.median_price || "";
-                document.getElementById("median-price").textContent = "$" + (usedData.median_price || "-");
-                document.getElementById("q1-price").textContent = "$" + (usedData.q1_price || "-");
-                document.getElementById("q3-price").textContent = "$" + (usedData.q3_price || "-");
-                document.getElementById("suggested-list-price").textContent = "$" + (usedData.suggested_list_price || "-");
-                document.getElementById("suggested-buy-price").textContent = "$" + (usedData.suggested_buy_price || "-");
-            })
-            .catch(error => console.error("Error fetching price:", error));
+        fetch("{% url 'pricing_engine:get_suggestions' %}?isbn=" + encodeURIComponent(isbn))
+                .then(response => response.json())
+                .then(data => {
+                    const usedData = data.used || {};
+                    const priceDisplay = document.getElementById("suggested-price-display");
+                    if (usedData.median_price) {
+                        priceDisplay.textContent = "$" + usedData.median_price;
+                    } else {
+                        priceDisplay.textContent = "N/A";
+                    }
+                })
+                .catch(error => console.error("Error fetching price:", error));
     }
+
+    document.getElementById("next-to-step-3").addEventListener("click", function () {
+        const isbnField = document.getElementById("id_isbn");
+        if (isbnField) {
+            fetchSuggestedPrice(isbnField.value.trim());
+        }
+    });
 });
 </script>
 {% endblock %}
