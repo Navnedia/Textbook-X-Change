@@ -13,38 +13,55 @@
         <a href="{% url 'wishlist:myrequests' %}" class="btn btn-dark btn-lg">My Requests</a> <!-- My Requests button -->
     </div>
 
-    <!-- Request Form -->
-    <div class="card shadow-lg p-4 custom-grey-box">
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group text">
-                <label for="title">Title</label>
+<!-- Request Form -->
+<div class="card shadow-lg p-4 custom-grey-box">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group text">
+            <label for="title">Title</label>
+            {% if success %}
+                <input type="text" name="title" value="{{ form.title.value }}" class="form-control" disabled>
+            {% else %}
                 {{ form.title }}
-            </div>
-
-            <div class="form-group">
-                <label for="isbn">ISBN</label>
-                {{ form.isbn }}
-            </div>
-
-            <div class="form-group">
-                <label for="author">Author</label>
-                {{ form.author }}
-            </div>
-
-            <!-- Conditionally hide the submit button after success -->
-            {% if not success %}
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
-            </div>
             {% endif %}
-        </form>
+        </div>
+        
+        <div class="form-group">
+            <label for="isbn">ISBN</label>
+            {% if success %}
+                <input type="text" name="isbn" value="{{ form.isbn.value }}" class="form-control" disabled>
+            {% else %}
+                {{ form.isbn }}
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="author">Author</label>
+            {% if success %}
+                <input type="text" name="author" value="{{ form.author.value }}" class="form-control" disabled>
+            {% else %}
+                {{ form.author }}
+            {% endif %}
+        </div>
 
-        <!-- Display success message only after form submission -->
-        {% if success %}
-            <p class="text-center text-success mt-3 fw-bold h5">Success! We will email you once your requested textbook is available</p>
+        {% if show_existing %}
+            <p class="text-center text-success mt-3 fw-bold h5">Good news! The textbook "{{ form.title.value }}" is already available!</p>  
+            {% endif %}
+        </div>
+        
+        <!-- Conditionally hide the submit button after success -->
+        {% if not success %}
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-dark px-4 py-2">Submit!</button>
+        </div>
         {% endif %}
-    </div>
+    </form>
+</div>
+    
+    <!-- Display success message only after form submission -->
+    {% if success %}
+        <p class="text-center text-success mt-3 fw-bold h5">Success! We will email you once your requested textbook is available!</p>
+    {% endif %}
 </div>
 
 <!-- Custom Styling -->

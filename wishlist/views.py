@@ -2,19 +2,51 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import WishList
 from django.contrib.auth.decorators import login_required
 from .forms import WishListForm
+from listings.models import Listing
 
+# @login_required
+# def request_book(request):
+#     if request.method == "POST":
+#         form = WishListForm(request.POST)
+#         if form.is_valid():
+#             wish = form.save(commit=False)
+#             wish.user = request.user
+#             wish.save()
+#             return render(request, "wishlist/requestbook.html", {
+#                 "form": form,  # Display an empty form after saving the request
+#                 "success": True  # Display success message
+#             })
+#     else:
+#         form = WishListForm()
+
+#     return render(request, "wishlist/requestbook.html", {'form': form})
 
 @login_required
 def request_book(request):
     if request.method == "POST":
         form = WishListForm(request.POST)
         if form.is_valid():
-            wish = form.save(commit=False)
-            wish.user = request.user
-            wish.save()
-            return render(request, "wishlist/requestbook.html", {
-                "success": True  # Display success message
-            })
+            isbn = form.cleaned_data['isbn']
+            
+            # Check if a listing already exists with this ISBN
+            existing_listing = Listing.objects.filter(isbn=isbn).first()
+            
+            if existing_listing:
+                # A listing exists, so show a link to that listing
+                return render(request, "wishlist/requestbook.html", {
+                    "form": form,
+                    "existing_listing": existing_listing,
+                    "show_existing": True
+                })
+            else:
+                # No listing exists, so save the wishlist request
+                wish = form.save(commit=False)
+                wish.user = request.user
+                wish.save()
+                return render(request, "wishlist/requestbook.html", {
+                    "form": form,
+                    "success": True
+                })
     else:
         form = WishListForm()
 
