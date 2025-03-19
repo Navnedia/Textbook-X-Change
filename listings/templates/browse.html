@@ -28,6 +28,15 @@
         .add-to-cart:hover {
             background-color: darkgrey;
         }
+        
+        .add-to-cart.in-cart {
+            background-color: #28a745;
+        }
+        
+        .add-to-cart.in-cart:hover {
+            background-color: #218838;
+        }
+        
         .listing-img {
             width: 100%;
             height: 200px;
@@ -125,11 +134,14 @@
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm position-relative">
                         {% with first_image=listing.images.first %}
-                            {% if first_image %}
-                                <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="listing-img card-img-top">
-                            {% else %}
-                                <img src="https://placehold.co/200" alt="No Image Available" class="listing-img card-img-top">
-                            {% endif %}
+                        {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ listing.title }}" class="listing-img card-img-top">
+                    {% else %}
+                        <div class="listing-img card-img-top d-flex justify-content-center align-items-center" style="background-color: #f8f9fa;">
+                            <i class="fas fa-camera-retro text-muted" style="font-size: 40px;"></i> <!-- Font Awesome Camera Icon -->
+                        </div>
+                    {% endif %}
+                    
                         {% endwith %}
                         <div class="card-body">
                             <h5 class="card-title">{{ listing.title }}</h5>
@@ -146,10 +158,20 @@
                                 {% comment %} Add to item to card form plus button. {% endcomment %}
                                 <form method="post" action="">
                                     {% csrf_token %}
+                                    {% if listing.seller != request.user %}
                                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    <button type="submit" class="btn add-to-cart btn-success z-1 " onclick="showCartPopup()" {% if listing.seller == user %}disabled{% endif %}>
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                                    {% if request.session.cart and listing.id in request.session.cart %}
+                                        <input type="hidden" name="action" value="remove">
+                                        <button type="submit" class="btn add-to-cart z-1 in-cart" onclick="showCartPopup()">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    {% else %}
+                                        <input type="hidden" name="action" value="add">
+                                        <button type="submit" class="btn add-to-cart z-1 btn-success" onclick="showCartPopup()">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    {% endif %}
+                                    {% endif %}
                                 </form>
                             </div>
                         </div>
@@ -166,4 +188,11 @@
 
 
 </div>
+<script>
+    function showCartPopup() {
+        var cartToast = new bootstrap.Toast(document.getElementById('cartToast'));
+        cartToast.show();
+    }
+</script>
+
 {% endblock %}

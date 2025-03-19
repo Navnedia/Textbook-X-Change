@@ -74,13 +74,18 @@ def browse_search(request):
     # Adding an item to the cart via POST
     if request.method == "POST":
         listing_id = request.POST.get("listing_id")
+        action = request.POST.get("action")
         if listing_id:
             listing_id = int(listing_id)
             cart = request.session.get("cart", [])
-            if listing_id not in cart:
+            if action == "add" and listing_id not in cart:
                 cart.append(listing_id)
                 request.session["cart"] = cart
                 messages.success(request, "Item added to cart!")
+            elif action == "remove" and listing_id in cart:
+                cart.remove(listing_id)
+                request.session["cart"] = cart
+                messages.success(request, "Item removed from cart!")
         return redirect("listings:browse_search")
 
     # For GET requests, display listings with selected filters:

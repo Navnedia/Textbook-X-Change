@@ -1,6 +1,38 @@
 {% extends "core/base.html" %}
 {% block title %}Cart | Textbook X Change{% endblock %}
 
+{% block styles %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cart-img {
+        width: 100%;
+        height: 200px;
+        object-fit: contain; /* Ensures the whole image is visible without cropping */
+        background-color: #f8f9fa; /* Light gray background for consistency */
+        border-radius: 5px;
+        padding: 5px;
+    }
+    
+    .order-img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 2px;
+    }
+    
+    .action-btn {
+        position: relative;
+        z-index: 2;
+    }
+</style>
+{% endblock styles %}
+
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4 bangers-font">Your Cart</h2>
@@ -12,79 +44,87 @@
         </div>
     {% endif %}
 
+    <!-- Cart Items Section -->
     <div class="row">
         {% for item in cart_items %}
-            <!-- Display items in cart -->
-            <div class="col-md-4 listing-card">
-                <div class="card shadow-sm">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm position-relative">
                     {% with first_image=item.images.first %}
                         {% if first_image %}
-                            <img src="{{ first_image.image.url }}" alt="{{ item.title }}" class="cart-img card-img-top object-fit-cover">
+                            <img src="{{ first_image.image.url }}" alt="{{ item.title }}" class="cart-img card-img-top">
                         {% else %}
-                            <img src="https://placehold.co/200" class="cart-img card-img-top object-fit-cover" alt="No Image Available">
+                            <img src="https://placehold.co/200" alt="No Image Available" class="cart-img card-img-top">
                         {% endif %}
                     {% endwith %}
-
+                    
                     <div class="card-body">
                         <h5 class="card-title">{{ item.title }}</h5>
                         <p class="card-text"><strong>Author:</strong> {{ item.author }}</p>
                         <p class="card-text fw-bold mb-0 fs-5">${{ item.price }}</p>
-
-                        <!-- Buttons in the same row -->
-                        <div class="d-flex justify-content-between mt-3">
+                        <p class="card-text pb-4"></p>
+                        
+                        <!-- Link to details page - Fixed namespace -->
+                        <a href="{% url 'listings:textbook_details' item.id %}" class="stretched-link"></a>
+                        
+                        <!-- Action buttons -->
+                        <div class="d-flex justify-content-between">
                             <form method="post" action="">
                                 {% csrf_token %}
                                 <input type="hidden" name="remove_listing_id" value="{{ item.id }}">
-                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                <button type="submit" class="btn btn-danger btn-sm action-btn">Remove</button>
                             </form>
-
-                            <a href="{% url 'cart:checkout' item.id %}" class="btn btn-primary btn-sm">Proceed to Checkout</a>
+                            
+                            <a href="{% url 'cart:checkout' item.id %}" class="btn btn-primary btn-sm action-btn">Checkout</a>
                         </div>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div class="col text-center"><p>Your cart is empty.</p></div>
+            <div class="col text-center">
+                <p>Your cart is empty.</p>
+                <!-- Fixed namespace -->
+                <a href="{% url 'listings:browse_search' %}" class="btn btn-primary mt-3">Browse Textbooks</a>
+            </div>
         {% endfor %}
     </div>
 
     <!-- Order History Section -->
-    <h3 class="mt-5 text-center bangers-font">Your Order History</h3>
-    <div class="list-group">
+    <h3 class="mt-5 mb-4 text-center bangers-font">Your Order History</h3>
+    <div class="list-group mb-5">
         {% for order in orders %}
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3 border rounded shadow-sm mb-3">
-
+            <div class="list-group-item d-flex align-items-center p-3 border rounded shadow-sm mb-3">
                 <div class="me-3">
                     {% with first_image=order.listing.images.first %}
                         {% if first_image %}
-                            <img src="{{ first_image.image.url }}" alt="{{ order.listing.title }}" class="img-thumbnail" width="80" height="80">
+                            <img src="{{ first_image.image.url }}" alt="{{ order.listing.title }}" class="order-img">
                         {% else %}
-                            <img src="https://placehold.co/80" class="img-thumbnail" width="80" height="80" alt="No Image Available">
+                            <img src="https://placehold.co/80" alt="No Image Available" class="order-img">
                         {% endif %}
                     {% endwith %}
                 </div>
 
-                <!-- Middle: Order Details -->
+                <!-- Order Details -->
                 <div class="flex-grow-1">
-                    <strong>{{ order.listing.title }}</strong> <br>
-                    <small class="text-muted">{{ order.listing.isbn }}</small><br>
-                    <small class="text-muted"><strong>Seller:</strong> {{ order.listing.seller.username }}</small>
-                    <p><strong>Price:</strong> ${{ order.listing.price }}</p>
+                    <h5 class="mb-1">{{ order.listing.title }}</h5>
+                    <p class="mb-1 text-body-secondary">ISBN: {{ order.listing.isbn }}</p>
+                    <p class="mb-1"><strong>Seller:</strong> {{ order.listing.seller.username }}</p>
+                    <p class="mb-0 fw-bold">${{ order.listing.price }}</p>
                 </div>
 
-                <!-- Right: Shipment Status -->
+                <!-- Shipment Status -->
                 <div class="text-end">
                     {% if order.has_shipped %}
-                        <h5><span class="badge text-bg-primary">Shipped</span></h5>
+                        <span class="badge bg-primary">Shipped</span>
                     {% else %}
-                        <h5><span class="badge text-bg-warning">Not Shipped Yet</span></h5>
+                        <span class="badge bg-warning text-dark">Not Shipped Yet</span>
                     {% endif %}
                 </div>
             </div>
         {% empty %}
-            <p class="text-center">No past orders yet.</p>
+            <div class="text-center py-4 border rounded shadow-sm">
+                <p class="mb-0">No past orders yet.</p>
+            </div>
         {% endfor %}
-        </div>
     </div>
 </div>
 {% endblock %}

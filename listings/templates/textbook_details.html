@@ -109,13 +109,15 @@
             </div>
 
             <!-- Add to Cart Button -->
+             {%if listing.seller != request.user %}
             <div class="col-md-12 d-flex justify-content-end">
                 <form method="post" action="">
                     {% csrf_token %}
                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                    <button type="submit" class="btn btn-dark btn-lg add-to-cart-btn" {% if listing.seller == user %}disabled{% endif %}>Add to Cart</button>
+                    <button type="submit" class="btn btn-dark btn-lg add-to-cart-btn" >Add to Cart</button>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 
