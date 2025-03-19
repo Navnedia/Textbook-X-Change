@@ -157,11 +157,13 @@
                                     {% csrf_token %}
                                     {% if listing.seller != request.user %}
                                     <input type="hidden" name="listing_id" value="{{ listing.id }}">
-                                    {% if request.session.cart %}
-                                        <button type="submit" class="btn add-to-cart z-1 {% if listing.id in request.session.cart %}in-cart{% else %}btn-success{% endif %}" onclick="showCartPopup()">
-                                            <i class="fas {% if listing.id in request.session.cart %}fa-check{% else %}fa-plus{% endif %}"></i>
+                                    {% if request.session.cart and listing.id in request.session.cart %}
+                                        <input type="hidden" name="action" value="remove">
+                                        <button type="submit" class="btn add-to-cart z-1 in-cart" onclick="showCartPopup()">
+                                            <i class="fas fa-check"></i>
                                         </button>
                                     {% else %}
+                                        <input type="hidden" name="action" value="add">
                                         <button type="submit" class="btn add-to-cart z-1 btn-success" onclick="showCartPopup()">
                                             <i class="fas fa-plus"></i>
                                         </button>
