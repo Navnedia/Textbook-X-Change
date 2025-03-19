@@ -24,36 +24,51 @@ on will have access to all the bootstrap styles and other libraries imported in 
                 <input class="form-control" type="search" name="q" placeholder="Search textbooks" aria-label="Search"
                     value="{% if search_form.q and search_form.q.value %}{{ search_form.q.value }}{% endif %}">
             </form>
+                {% if user.is_authenticated %}
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-user"></i>
+                        <i class="fa fa-user">
+                            {% if dashboard_notifications %}
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span class="visually-hidden">New dashboard Notifications</span>
+                                </span>
+                            {% endif %}
+                        </i>
                     </a>
                     <ul class="dropdown-menu">
                         <li><span class="dropdown-item-text">Logged in as: {{ user.username }}</span></li>
-                        <li><a class="dropdown-item" href="{% url 'user_profile' %}">Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="{% url 'wishlist:myrequests' %}">My Requests</a></li>
+                        <li><a class="dropdown-item icon-link" href="{% url 'user_profile' %}"><i class="fa fa-user"></i>Profile</a></li>
+                        <li><a class="dropdown-item icon-link" href="{% url 'dashboard:dashboard' %}">
+                            <i class="fa-solid fa-table-columns"></i>Dashboard
+                            {% if dashboard_notifications %}
+                                <span class="badge bg-danger">{{ dashboard_notifications }} <span class="visually-hidden">New dashboard Notifications</span></span>
+                            {% endif %}
+                        </a></li>
+                        <li><a class="dropdown-item icon-link" href="{% url 'wishlist:myrequests' %}">
+                            <i class="fa-solid fa-comment"></i>My Requests</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                <button type="submit" class="dropdown-item text-danger icon-link">
+                                    <i class="fa-solid fa-right-from-bracket"></i>Logout
+                                </button>
                             </form>
                         </li>
                     </ul>
                 </div>
-            {% if user.is_authenticated %}
-            <div class="d-flex align-items-center ms-3">
-                <a href="{% url 'cart:cart' %}" class="nav-link me-3">
-                    <i class="fa fa-cart-shopping position-relative">
-                        {% if cart_notification %}
-                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
-                    <span class="visually-hidden">New Cart Notification</span>
-                </span>
-                        {% endif %}
-                    </i>
-                </a>
-            </div>
+
+                <div class="d-flex align-items-center ms-md-3">
+                    <a href="{% url 'cart:cart' %}" class="nav-link me-3">
+                        <i class="fa fa-cart-shopping position-relative">
+                            {% if cart_notification %}
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                    <span class="visually-hidden">New Cart Notification</span>
+                                </span>
+                            {% endif %}
+                        </i>
+                    </a>
+                </div>
             {% endif %}
 
             <div class="navbar-nav ms-auto">
