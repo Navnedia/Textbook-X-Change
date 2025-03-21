@@ -1,21 +1,30 @@
-{% extends "core/base.html" %}
+{% extends "core/skeleton.html" %}
 {% block title %}List a Textbook{% endblock title %}
+{% load static %}
 
-{% block content %}
-<div class="container text-center mt-5">
-        <h1 class="text-center bangers-font">Start your listing</h1>
+{% block body %}
+    {% include "core/navbar_minimal.html" %}
+{% endblock %}
 
-        <form action="{% url 'listings:prelist' %}" method="GET" class="row g-3 w-100 mb-5">
+{% block body-container %}
+    <div class="py-3 text-center">
+        <h1 class="bangers-font">Start your listing</h1>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <form action="{% url 'listings:prelist' %}" method="GET" class="row g-3 w-7 mb-5 min-vw-75">
             {% csrf_token %}
-            <div class="col-8">{{ form.isbn }}</div>
+            <div class="col-md-10">{{ form.isbn }}</div>
 
-            <div class="col-auto">
+            <div class="col-md-2 text-center">
                 <button type="submit" class="btn btn-secondary px-5">
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
-        </form>
 
-        <a href="{% url 'listings:create_listing' %}">Continue with Manual Listing</a>
-</div>
+            <div class="col-12 text-center">
+                <a href="{% url 'listings:create_listing' %}">Continue with Manual Listing</a>
+            </div>
+        </form>
+    <div>
 {% endblock %}
