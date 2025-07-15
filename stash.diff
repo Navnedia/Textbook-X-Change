@@ -1,0 +1,604 @@
+diff --git a/core/forms.py b/core/forms.py
+index ef729da..2d9a4c9 100644
+--- a/core/forms.py
++++ b/core/forms.py
+@@ -1,8 +1,87 @@
+ from django import forms
+-from django_select2 import forms as s2forms
+-from .models import School
++from django_select2.forms import ModelSelect2Widget, ModelSelect2TagWidget
++from .models import School, Course, Subject, Author
++from django.utils.encoding import force_str
+ 
+ 
+-class SchoolWidget(s2forms.ModelSelect2Widget):
++class SchoolWidget(ModelSelect2Widget):
+     model = School
+-    search_fields=['name__icontains']
+\ No newline at end of file
++    queryset = School.objects.all()
++    search_fields=['name__icontains']
++
++
++class CourseWidget(ModelSelect2TagWidget):
++    model = Course
++    queryset = Course.objects.all()
++    search_fields=['code__icontains']
++    school_id = None
++
++    # Inspiration taken from documentation and https://github.com/applegrew/django-select2/issues/603
++    def value_from_datadict(self, data, files, name):
++        # Get the selected values and figure out which course tags already exist:
++        values = set(super().value_from_datadict(data, files, name))
++        queryset = self.get_queryset()
++        existing_pks = queryset.filter(**{'pk__in': [v for v in values if v.isdigit()]}) \
++            .values_list('pk', flat=True)
++        cleaned_values = list(existing_pks)
++
++        if self.school_id:
++            # Get the school from the users school id:
++            school = School.objects.get(pk=self.school_id)
++            
++            # Create any course tags that don't already exist (registered under the users school):
++            for val in values:
++                if val.isdigit() and int(val) not in existing_pks \
++                    or not val.isdigit() and force_str(val) not in existing_pks:
++                    val = queryset.create(code=val, school=school).pk
++                cleaned_values.append(val)
++
++        return cleaned_values
++
++
++class SubjectWidget(ModelSelect2TagWidget):
++    model = Subject
++    queryset = Subject.objects.all()
++    search_fields=['name__icontains']
++
++    # Inspiration taken from documentation and https://github.com/applegrew/django-select2/issues/603
++    def value_from_datadict(self, data, files, name):
++        # Get the selected values and figure out which subject tags already exist:
++        values = set(super().value_from_datadict(data, files, name))
++        queryset = self.get_queryset()
++        existing_pks = queryset.filter(**{'pk__in': [v for v in values if v.isdigit()]}) \
++            .values_list('pk', flat=True)
++        cleaned_values = list(existing_pks)
++            
++        # Create any subject tags that don't already exist:
++        for val in values:
++            if val.isdigit() and int(val) not in existing_pks \
++                or not val.isdigit() and force_str(val) not in existing_pks:
++                val = queryset.create(name=val).pk
++            cleaned_values.append(val)
++
++        return cleaned_values
++
++
++class AuthorWidget(ModelSelect2TagWidget):
++    model = Author
++    queryset = Author.objects.all()
++    search_fields=['name__icontains']
++
++    # Inspiration taken from documentation and https://github.com/applegrew/django-select2/issues/603
++    def value_from_datadict(self, data, files, name):
++        # Get the selected values and figure out which author already exist:
++        values = set(super().value_from_datadict(data, files, name))
++        queryset = self.get_queryset()
++        existing_pks = queryset.filter(**{'pk__in': [v for v in values if v.isdigit()]}) \
++            .values_list('pk', flat=True)
++        cleaned_values = list(existing_pks)
++            
++        # Create any author that don't already exist:
++        for val in values:
++            if val.isdigit() and int(val) not in existing_pks \
++                or not val.isdigit() and force_str(val) not in existing_pks:
++                val = queryset.create(name=val).pk
++            cleaned_values.append(val)
++
++        return cleaned_values
+diff --git a/core/templates/core/navbar_minimal.html b/core/templates/core/navbar_minimal.html
+index 9ad01b3..9859f13 100644
+--- a/core/templates/core/navbar_minimal.html
++++ b/core/templates/core/navbar_minimal.html
+@@ -4,12 +4,12 @@ on will have access to all the bootstrap styles and other libraries imported in
+ {% endcomment %}
+ {% load static %}
+ 
+-<nav class="navbar navbar-expand-md py-md-4 bg-body-tertiary">
++<nav class="navbar navbar-expand-md bg-body-tertiary">
+     <div class="container-fluid">
+-        <button type="button" class="btn btn-secondary" onclick="history.back()">
+-            <i class="fa-solid fa-arrow-left"></i>
+-            Back
+-        </button>
++        <a href="{% url "index" %}" class="btn btn-secondary">
++            <i class="fa-solid fa-x"></i>
++            Cancel
++        </a>
+ 
+         <a href="{% url 'index' %}" class="navbar-brand m-0 p-0 mx-auto" style="color:#191919;">
+             {% comment %} Logo SVG {% endcomment %}
+diff --git a/listings/forms.py b/listings/forms.py
+index 8c24eaa..9d0dd7f 100644
+--- a/listings/forms.py
++++ b/listings/forms.py
+@@ -1,5 +1,8 @@
+ from django import forms
++
++from core.forms import AuthorWidget, CourseWidget, SubjectWidget
+ from .models import Listing
++from core.models import Author, Book, Course, Subject
+ 
+ 
+ LOCATION_FILTER_CHOICES = {
+@@ -23,7 +26,6 @@ class SearchForm(forms.Form):
+     )
+ 
+ 
+-
+ class PrelistForm(forms.Form):
+     # For now, the form will only accept an ISBN number, but we might allow 
+     # it to accept details like the title or author in the future.
+@@ -58,6 +60,79 @@ class MultipleFileField(forms.FileField):
+ class FileFieldForm(forms.Form):
+     file_field = MultipleFileField()
+ 
++
++class BookForm(forms.ModelForm):
++
++    authors = forms.ModelMultipleChoiceField(
++        queryset=Author.objects.all(), 
++        required=False,
++        widget=AuthorWidget(attrs={
++            "data-minimum-input-length": 0,
++            "data-token-separators": '[";"]',
++            'data-width': '100%',
++            "data-placeholder": "Add authors of this book",
++            "class": "form-select w-100",
++        }),
++    )
++
++    subjects = forms.ModelMultipleChoiceField(
++        queryset=Subject.objects.all(), 
++        required=False,
++        widget=SubjectWidget(attrs={
++            'data-minimum-input-length': 0,
++            "data-token-separators": '[";"]',
++            'data-width': '100%',
++            "data-placeholder": "Add related subject tags",
++            "class": "form-select w-100",
++        }),
++    )
++
++    courses = forms.ModelMultipleChoiceField(
++        queryset=Course.objects.all(), 
++        required=False,
++        widget=CourseWidget(attrs={
++            'data-minimum-input-length': 0,
++            "data-token-separators": '[";"]',
++            'data-width': '100%',
++            "data-placeholder": "Add related course codes",
++            "class": "form-select",
++        }),
++        help_text="Tell us what course(s) you used this book for to help others find what their looking for."
++    )
++    
++    def __init__(self, *args, **kwargs):
++        school = kwargs.pop('school', None)  # Extract 'school' from kwargs.
++        super().__init__(*args, **kwargs)
++
++        book = kwargs.get('initial', None)
++        if book:
++            print(book)
++            #! Exclude forbiden field edits
++            forbiden = ["isbn", "title", "authors",]
++
++            for field_name, val in book.items():
++                if val or field_name in forbiden:
++                    field = self.fields.get(field_name, None)
++                    if field:
++                        field.disabled = True
++
++        # Configure the course tag field to filter to only show and create course tags from the users school:
++        if school:
++            self.fields["courses"].widget.queryset = Course.objects.filter(school=school)
++            self.fields["courses"].widget.school_id = school.pk
++
++    class Meta:
++        model = Book
++        fields = ["isbn", "title", "authors", "summary", "courses", "edition", "subjects"]
++        labels={ "isbn":"ISBN" }
++        widgets={
++            "title":forms.TextInput(attrs={"class":"form-control"}),
++            "isbn":forms.TextInput(attrs={"class":"form-control"}),
++            "edition":forms.NumberInput(attrs={"class":"form-control"}),
++            "summary":forms.Textarea(attrs={"class":"form-control"}),
++        }
++
++
+ class ListingForm(forms.ModelForm):
+     images = MultipleFileField(required=False)
+     
+@@ -85,3 +160,11 @@ class ListingForm(forms.ModelForm):
+         #     "location":forms.Select(attrs={"class":"form-control"}),
+         #     "coursecode":forms.TextInput(attrs={"class":"form-control"})  
+         # }
++
++
++# class Combined(BookForm, ListingForm):
++#     def save(self, commit=True):
++#         pass
++
++
++#! Take a look at what claude did, it defines both with model forms and combines it, but then uses them separately to save/validate.
+\ No newline at end of file
+diff --git a/listings/templates/browse.html b/listings/templates/browse.html
+index bb9a45f..eee30d7 100644
+--- a/listings/templates/browse.html
++++ b/listings/templates/browse.html
+@@ -136,8 +136,13 @@
+                             <p class="card-subtitle mb-2 text-body-secondary">{{ listing.condition }}</p>
+                             <p class="card-text fw-bold mb-0 fs-5">${{ listing.price }}</p>
+                             <p class="card-text text-body-secondary">{{ listing.location }}</p>
+-                            <p class="card-text"><strong>Author:</strong> {{ listing.author }}</p>
+-                            <p class="card-text pb-4"><strong>ISBN:</strong> {{ listing.isbn }}</p>
++                            <p class="card-text"><span class="fw-bold">Author:</span> 
++                                {% for author in listing.book.authors.all %}
++                                    {% if forloop.counter == 1 %}{{ author.name }}{% endif %}
++                                    {% if forloop.counter == 2 %}<span class="text-body-secondary">, et al.</span>{% endif %}
++                                {% endfor %}
++                            </p>
++                            <p class="card-text pb-4"><span class="fw-bold">ISBN:</span> {{ listing.book.isbn }}</p>
+ 
+                             {% comment %} This details page link is hidden and stretched wrap the whole card making it clickable. {% endcomment %}
+                             <a href="{% url "listings:textbook_details" listing.id %}" class="stretched-link"></a>
+diff --git a/listings/templates/create_listing.html b/listings/templates/create_listing.html
+index 4119566..a61dde6 100644
+--- a/listings/templates/create_listing.html
++++ b/listings/templates/create_listing.html
+@@ -1,7 +1,9 @@
+-{% extends "core/base.html" %}
++{% extends "core/skeleton.html" %}
+ {% block title %}Sell on Textbook X Change{% endblock title %}
+ 
+-{% block content %}
++{% block body %}
++{% include "core/navbar_minimal.html" %}
++
+ <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+     <div class="row w-100">
+         <div class="col-md-6 mx-auto text-center">
+diff --git a/listings/templates/create_listing_step1.html b/listings/templates/create_listing_step1.html
+new file mode 100644
+index 0000000..9ac8c29
+--- /dev/null
++++ b/listings/templates/create_listing_step1.html
+@@ -0,0 +1,144 @@
++{% extends "core/skeleton.html" %}
++{% block title %}Sell on Textbook X Change{% endblock %}
++
++{% block styles %}
++    {{ form.media.css }}
++
++    <style>
++        .container {
++            max-width: 960px;
++        }
++        
++        .select2-search__field {
++            width: 100% !important
++        }
++        .select2-selection--multiple {
++            padding: 0rem 0.75rem !important;
++        }
++        .select2-selection--multiple > ul {
++            display: inline-flex !important;
++        }
++        .select2-selection--multiple > ul > li {
++            padding: 0 0.3rem !important;
++            margin: 0.3rem !important;
++        }
++        .select2-selection--multiple .select2-search--inline {
++            display: inline-flex !important;
++            width: auto !important;
++            margin-top: 0.3rem !important;
++            vertical-align: middle;
++        }
++    </style>
++{% endblock %}
++
++{% block body %}
++    {% include "core/navbar_minimal.html" %}
++{% endblock %}
++
++{% block body-container %}
++    <form action="{% url "course" %}" method="POST" class="row g-3 py-3">
++        {% csrf_token %}
++
++        {% if form.non_field_errors %}
++            <div class="alert alert-danger">
++                {{ form.non_field_errors }}
++            </div>
++        {% endif %}
++
++        <div class="col-12">
++            <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
++            {{ form.title }}
++            
++            {% if form.title.help_text %}
++                <small class="form-text text-body-secondary">{{ form.title.help_text }}</small>
++            {% endif %}
++            {% if form.title.errors %}
++                <div class="text-danger">{{ form.title.errors }}</div>
++            {% endif %}
++        </div>
++
++        <div class="col-12">
++            <hr class="border border-2 border-black">
++        </div>
++
++        <div class="col-md-4">
++            <label for="{{ form.isbn.id_for_label }}" class="form-label">ISBN</label>
++            {{ form.isbn }}
++            
++            {% if form.isbn.help_text %}
++                <small class="form-text text-body-secondary">{{ form.isbn.help_text }}</small>
++            {% endif %}
++            {% if form.isbn.errors %}
++                <div class="text-danger">{{ form.isbn.errors }}</div>
++            {% endif %}
++        </div>
++
++        <div class="col-md-8">
++            <label for="{{ form.authors.id_for_label }}" class="form-label">Authors</label>
++            {{ form.authors }}
++            
++            {% if form.authors.help_text %}
++                <small class="form-text text-body-secondary">{{ form.authors.help_text }}</small>
++            {% endif %}
++            {% if form.authors.errors %}
++                <div class="text-danger">{{ form.authors.errors }}</div>
++            {% endif %}
++        </div>
++
++        <div class="col-md-2">
++            <label for="{{ form.edition.id_for_label }}" class="form-label">Edition</label>
++            {{ form.edition }}
++
++            {% if form.edition.help_text %}
++                <small class="form-text text-body-secondary">{{ form.edition.help_text }}</small>
++            {% endif %}
++            {% if form.edition.errors %}
++                <div class="text-danger">{{ form.edition.errors }}</div>
++            {% endif %}
++        </div>
++
++        <div class="col-md-10">
++            <label for="{{ form.subjects.id_for_label }}" class="form-label">Subjects</label>
++            {{ form.subjects }}
++            
++            {% if form.subjects.help_text %}
++                <small class="form-text text-body-secondary">{{ form.subjects.help_text }}</small>
++            {% endif %}
++            {% if form.subjects.errors %}
++                <div class="text-danger">{{ form.subjects.errors }}</div>
++            {% endif %}
++        </div>
++
++        <div class="col-12">
++            <label for="{{ form.summary.id_for_label }}" class="form-label">Summary</label>
++            {{ form.summary }}
++            
++            {% if form.summary.help_text %}
++                <small class="form-text text-body-secondary">{{ form.summary.help_text }}</small>
++            {% endif %}
++            {% if form.summary.errors %}
++                <div class="text-danger">{{ form.summary.errors }}</div>
++            {% endif %}
++        </div>
++        
++        <div class="col-12">
++            <hr class="border border-2 border-black">
++        </div>
++
++        <div class="col-12">
++            <label for="{{ form.courses.id_for_label }}" class="form-label">Courses</label>
++            {{ form.courses }}
++            
++            {% if form.courses.help_text %}
++                <small class="form-text text-body-secondary">{{ form.courses.help_text }}</small>
++            {% endif %}
++            {% if form.courses.errors %}
++                <div class="text-danger">{{ form.courses.errors }}</div>
++            {% endif %}
++        </div>
++
++        <input type="submit" value="Submit" class="btn btn-success">
++    </form>
++
++    {{ form.media.js }}
++{% endblock%}
+diff --git a/listings/templates/prelist.html b/listings/templates/prelist.html
+index 9e77b6f..64fe780 100644
+--- a/listings/templates/prelist.html
++++ b/listings/templates/prelist.html
+@@ -1,21 +1,27 @@
+-{% extends "core/base.html" %}
++{% extends "core/skeleton.html" %}
+ {% block title %}List a Textbook{% endblock title %}
+ 
+-{% block content %}
+-<div class="container text-center mt-5">
+-        <h1 class="text-center bangers-font">Start your listing</h1>
++{% block body %}
++    {% include "core/navbar_minimal.html" %}
++    <button type="button" class="btn btn-secondary float-start m-5" onclick="history.back()">
++        <i class="fa-solid fa-arrow-left"></i>
++        Back
++    </button>
+ 
+-        <form action="{% url 'listings:prelist' %}" method="GET" class="row g-3 w-100 mb-5">
+-            {% csrf_token %}
+-            <div class="col-8">{{ form.isbn }}</div>
++    <div class="container text-center mt-5">
++            <h1 class="text-center bangers-font">Start your listing</h1>
+ 
+-            <div class="col-auto">
+-                <button type="submit" class="btn btn-secondary px-5">
+-                    <i class="fa-solid fa-arrow-right"></i>
+-                </button>
+-            </div>
+-        </form>
++            <form action="{% url 'listings:prelist' %}" method="GET" class="row g-3 w-100 mb-5">
++                {% csrf_token %}
++                <div class="col-8">{{ form.isbn }}</div>
+ 
+-        <a href="{% url 'listings:create_listing' %}">Continue with Manual Listing</a>
+-</div>
++                <div class="col-auto">
++                    <button type="submit" class="btn btn-secondary px-5">
++                        <i class="fa-solid fa-arrow-right"></i>
++                    </button>
++                </div>
++            </form>
++
++            <a href="{% url 'listings:create_listing' %}">Continue with Manual Listing</a>
++    </div>
+ {% endblock %}
+\ No newline at end of file
+diff --git a/listings/templates/textbook_details.html b/listings/templates/textbook_details.html
+index fc94180..f6a4e8b 100644
+--- a/listings/templates/textbook_details.html
++++ b/listings/templates/textbook_details.html
+@@ -68,12 +68,17 @@
+             <div class="col-auto">
+                 <h3 class="fw-bold bangers-font fs-2">{{ listing.title }}</h3> 
+ 
+-                <p class="text-muted">by <strong>{{ listing.author }}</strong></p>
++                <p class="text-muted">by 
++                    {% for author in listing.book.authors.all %}
++                        {% if forloop.first == False %}, {% endif %}
++                        <span class="fw-bold">{{ author.name }}</span>
++                    {% endfor %}
++                </p>
+                 
+                 <!-- Book Details -->
+                 <div class="mt-3">
+                     <h5 class="fw-bold">ISBN</h5>
+-                    <p class="book-details-text">{{ listing.isbn }}</p>
++                    <p class="book-details-text">{{ listing.book.isbn }}</p>
+ 
+                     <h5 class="fw-bold">Condition</h5>
+                     <p class="book-details-text">{{ listing.condition }}</p>
+@@ -107,15 +112,16 @@
+                     <p class="book-details-text text-muted">{{ listing.additional_details }}</p>
+                 </div>
+             </div>
+-
+-            <!-- Add to Cart Button -->
+-            <div class="col-md-12 d-flex justify-content-end">
+-                <form method="post" action="">
+-                    {% csrf_token %}
+-                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+-                    <button type="submit" class="btn btn-dark btn-lg add-to-cart-btn" {% if listing.seller == user %}disabled{% endif %}>Add to Cart</button>
+-                </form>
+-            </div>
++            {% if listing.sold == False  %}
++                <!-- Add to Cart Button Positioned to the Right -->
++                <div class="col-md-12 d-flex justify-content-end">
++                    <form method="post" action="">
++                        {% csrf_token %}
++                        <input type="hidden" name="listing_id" value="{{ listing.id }}">
++                        <button type="submit" class="btn btn-dark btn-lg add-to-cart-btn" {% if listing.seller == user %}disabled{% endif %}>Add to Cart</button>
++                    </form>
++                </div>
++            {% endif %}
+         </div>
+     </div>
+ 
+diff --git a/listings/urls.py b/listings/urls.py
+index dd34025..63c670b 100644
+--- a/listings/urls.py
++++ b/listings/urls.py
+@@ -6,8 +6,9 @@ app_name = 'listings'
+ urlpatterns = [
+     path("", views.browse_search, name="browse_search"),
+     path("<int:pk>/", views.textbook_details, name="textbook_details"),
+-    path("prelist/", views.prelist, name="prelist"),
++    # path("prelist/", views.prelist, name="prelist"),
+     path("create/", views.create_listing, name="create_listing"),
+     path("edit/<int:listing_id>/", views.edit_listing, name="edit_listing"),
+-    path("delete/<int:listing_id>/", views.delete_listing, name="delete_listing")
++    path("delete/<int:listing_id>/", views.delete_listing, name="delete_listing"),
++    path("create/", views.CreateListingView.as_view(), name="create_listing")
+ ]
+diff --git a/listings/views.py b/listings/views.py
+index 18c532e..b8d3e4c 100644
+--- a/listings/views.py
++++ b/listings/views.py
+@@ -11,6 +11,12 @@ from django.template.loader import render_to_string
+ from django.conf import settings
+ from django.contrib import messages
+ 
++from django.views.generic.edit import FormView
++from django.forms.models import model_to_dict
++
++from core.models import Book
++from .forms import BookForm
++
+ # Create listing views here:
+ 
+ def user_profile(request):
+@@ -94,8 +100,8 @@ def browse_search(request):
+         # Filter listings based on search query
+         if query:
+             listings = listings.filter(
+-                Q(title__icontains=query) | Q(author__icontains=query) | Q(isbn__exact=query)
+-            )
++                Q(book__title__icontains=query) | Q(book__authors__name__icontains=query) | Q(book__isbn__exact=query)
++            ).select_related("book", "seller").prefetch_related("book__authors")  # Filter by title, author, and ISBN containing the search term
+ 
+         # Apply location filter
+         if location_filter == "Global":
+@@ -136,7 +142,7 @@ def browse_search(request):
+     })
+ # Textbook Details View
+ def textbook_details(request, pk):
+-    listing = get_object_or_404(Listing, pk=pk)
++    listing = get_object_or_404(Listing, pk=pk) # Technical, we should filter for sold=False
+ 
+     if request.method == "POST":
+         listing_id = request.POST.get("listing_id")
+@@ -153,7 +159,7 @@ def textbook_details(request, pk):
+ 
+ @login_required
+ def edit_listing(request, listing_id):
+-    listing = Listing.objects.get(pk=listing_id, seller=request.user)
++    listing = get_object_or_404(Listing, pk=listing_id, seller=request.user, sold=False)
+ 
+     if request.method == "POST":
+         form = ListingForm(request.POST, request.FILES, instance=listing)
+@@ -172,8 +178,22 @@ def edit_listing(request, listing_id):
+ @login_required
+ def delete_listing(request: HttpRequest, listing_id) -> HttpResponse:
+     try:
+-        listing = Listing.objects.get(pk=listing_id, seller=request.user)
++        listing = Listing.objects.get(pk=listing_id, seller=request.user, sold=False)
+         listing.delete()
+     finally:
+         return redirect("dashboard:dashboard")
+ 
++@login_required
++class CreateListingView(FormView):
++    template_name = "listings/create_listing_step1.html"
++    form_class = BookForm
++    success_url = "/"
++
++    def get_form_kwargs(self):
++        kwargs = super().get_form_kwargs()
++        # Add the 'pk' URL parameter to the form kwargs
++        kwargs['school'] = self.request.user.profile.school
++        return kwargs
++    
++    def get_initial(self):
++        return model_to_dict(Book(title="wow"))
+\ No newline at end of file
