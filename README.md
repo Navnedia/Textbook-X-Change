@@ -1,7 +1,14 @@
 # Textbook X Change
 Textbook-X-Change is a student-focused marketplace aimed simplifying college life and cutting costs by creating a platform where students can swap, sell, or buy textbooks directly from peers in their campus community.
 
-Powered by Python, Django, and PostgreSQL with a frontend using HTML and Bootstrap components. The application is containerized using Docker compose for easy deployment and scalability.
+### Features
+- **📚 Textbook Listings:** Students can create listings fast with autofilled book details from the ISBN, and pricing suggestions powered by internal and web scraping data.
+- **🔍 Search and Filter:** Advanced search and filtering options to find textbooks by title, author, ISBN, subject, condition, price range, and location.
+- **🔒 User Authentication:** Secure registration and login functionality.
+- **📦 Containerized Deployment:** Easy setup and scalable deployment using Docker compose.
+- **🖼️ Image Storage:** Using AWS S3 to store listing images uploaded by users.
+
+Powered by Python, Django, and PostgreSQL with a frontend using HTML and Bootstrap components.
 
 ## Gallery
 ![Home Page](screenshots/homepage.png)
